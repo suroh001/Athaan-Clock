@@ -67,9 +67,14 @@ void loop(void)
     Serial.print("Count = ");
     Serial.println(virtualPosition);
   }
+
+  enum {BufSize=6}; // If a is short use a smaller number, eg 5 or 6 
+  char positionString[BufSize];
+  snprintf (positionString, BufSize, "%d", virtualPosition);
+  u8g2.drawStr(33, 33, positionString);
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_ncenB14_tr);
-  u8g2.drawStr(0, 20, "dada stinky");
-  u8g2.drawStr(0, 50, "boy");
+  u8g2.drawStr(0, 20, positionString);
+  u8g2.drawStr(0, 50, "ay iss workin'");
   u8g2.sendBuffer();
 }
