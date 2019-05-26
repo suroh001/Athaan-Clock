@@ -28,6 +28,6 @@ void setup(void) {
 void loop(void) {
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_ncenB14_tr);
-  u8g2.drawStr(0,32,"AY WHAT'S UP");
+  u8g2.drawStr(0,32,"peng display");
   u8g2.sendBuffer();
 }
