@@ -1,5 +1,5 @@
 # AthaanClock
-Creating an Athaan clock with slick display functions
+I'm creating a device that plays the islamic call to prayer at the exact prayer times.
 
 Currently, I'm using the (rather buggy) ST7290 LCD Display with Arduino Mega2560 and A Keyes rotary encoder to allow the user to configre athaan settings.
 
