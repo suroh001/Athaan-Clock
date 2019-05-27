@@ -1,15 +1,3 @@
-// ============================================================
-// Project:     Athaan Clock
-// ============================================================
-// Author:      Habeeb Surooprajally
-// Project start date: 25.05.2019
-// ============================================================
-// Description:
-// The final result will be a highly configurable device which  
-// will play the islamic call to prayer at the appropriate time
-// day.
-// ============================================================
-
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <SPI.h>
@@ -54,8 +42,6 @@ void setup(void)
   attachInterrupt(0, isr0, CHANGE); // interrupt 0 is always connected to pin 2 on Arduino UNO
   Serial.begin(9600);
   Serial.println("Start");
-  u8g2.setFont(u8g2_font_6x12_tr);
-  u8g2.begin(/*Select=*/ 26, /*Right/Next=*/ 2, /*Left/Prev=*/ 24, /*Up=*/ 24, /*Down=*/ 2, /*Home/Cancel=*/ A6); 
   u8g2.begin();
 }
 
@@ -90,43 +76,9 @@ void loop(void)
   char positionString[BufSize];
   snprintf(positionString, BufSize, "%d", integerPosition);
 
-    current_selection = u8g2.userInterfaceSelectionList(
-    "Cloud Types",
-    current_selection, 
-    string_list);
-
-  if ( current_selection == 0 ) {
-    u8g2.userInterfaceMessage(
-	"Nothing selected.", 
-	"",
-	"",
-	" ok ");
-  } else {
-    u8g2.userInterfaceMessage(
-	"Selection:", 
-	u8x8_GetStringLineStart(current_selection-1, string_list ),
-	"",
-	" ok \n cancel ");
-  }
-
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB14_tr);
+  u8g2.drawStr(0, 20, positionString);
+  u8g2.drawStr(0, 50, "ay iss workin'");
+  u8g2.sendBuffer();
 }
-
-
-
-const char *string_list = 
-  "Altocumulus\n"
-  "Altostratus\n"
-  "Cirrocumulus\n"
-  "Cirrostratus\n"
-  "Cirrus\n"
-  "Cumulonimbus\n"
-  "Cumulus\n"
-  "Nimbostratus\n"
-  "Stratocumulus\n"
-  "Stratus";
-
-uint8_t current_selection = 0;
-
-
-
-
