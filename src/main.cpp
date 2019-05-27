@@ -9,8 +9,8 @@ U8G2_ST7920_128X64_F_8080 u8g2(U8G2_R0, 22, 3, 4, 5, 6, 7, 8, 9, 13, U8X8_PIN_NO
 volatile boolean TurnDetected;
 volatile boolean up;
 
-const int pinA = 2; // Used for generating interrupts using CLK signal
-const int pinB = 24; // Used for reading DT signal
+const int pinA = 2;   // Used for generating interrupts using CLK signal
+const int pinB = 24;  // Used for reading DT signal
 const int PinSW = 26; // Used for the push button switch
 
 //U8X8_PIN_NONE
@@ -42,7 +42,39 @@ void setup(void)
   attachInterrupt(0, isr0, CHANGE); // interrupt 0 is always connected to pin 2 on Arduino UNO
   Serial.begin(9600);
   Serial.println("Start");
+
   u8g2.begin();
+  delay(1000);
+
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB10_tr);
+  //Serial.println(u8g2.getStrWidth("Welcome!"));
+  u8g2.drawStr((64 - (u8g2.getStrWidth("Habeeb's") / 2)), 37, "Habeeb's");
+  u8g2.sendBuffer();
+
+  delay(1000);
+
+  for (int i = 64; i <= ((u8g2.getStrWidth("Habeeb's") / 2) + 64); i++) {
+    u8g2.drawHLine(i, 40, 1);
+    u8g2.drawHLine((128 - i), 40, 1);
+    u8g2.sendBuffer();
+    delay(1);
+  }
+
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB10_tr);
+  //Serial.println(u8g2.getStrWidth("Welcome!"));
+  u8g2.drawStr((64 - (u8g2.getStrWidth("Athaan Clock") / 2)), 37, "Athaan Clock");
+  u8g2.sendBuffer();
+
+  delay(1000);
+
+  for (int i = 64; i <= ((u8g2.getStrWidth("Athaan Clock") / 2) + 64); i++) {
+    u8g2.drawHLine(i, 40, 1);
+    u8g2.drawHLine((128 - i), 40, 1);
+    u8g2.sendBuffer();
+    delay(1);
+  }
 }
 
 void loop(void)
@@ -77,8 +109,11 @@ void loop(void)
   snprintf(positionString, BufSize, "%d", integerPosition);
 
   u8g2.clearBuffer();
-  u8g2.setFont(u8g2_font_ncenB14_tr);
-  u8g2.drawStr(0, 20, positionString);
+  u8g2.drawHLine(0, 15, 128);
+  u8g2.setFont(u8g2_font_victoriabold8_8u);
+  u8g2.setFontPosCenter();
+  u8g2.drawStr((64 - (u8g2.getStrWidth("MAIN MENU") / 2)), 10, "MAIN MENU");
+  u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
   u8g2.drawStr(0, 50, "ay iss workin'");
   u8g2.sendBuffer();
 }
