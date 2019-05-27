@@ -54,7 +54,8 @@ void setup(void)
 
   delay(1000);
 
-  for (int i = 64; i <= ((u8g2.getStrWidth("Habeeb's") / 2) + 64); i++) {
+  for (int i = 64; i <= ((u8g2.getStrWidth("Habeeb's") / 2) + 64); i++)
+  {
     u8g2.drawHLine(i, 40, 1);
     u8g2.drawHLine((128 - i), 40, 1);
     u8g2.sendBuffer();
@@ -69,7 +70,8 @@ void setup(void)
 
   delay(1000);
 
-  for (int i = 64; i <= ((u8g2.getStrWidth("Athaan Clock") / 2) + 64); i++) {
+  for (int i = 64; i <= ((u8g2.getStrWidth("Athaan Clock") / 2) + 64); i++)
+  {
     u8g2.drawHLine(i, 40, 1);
     u8g2.drawHLine((128 - i), 40, 1);
     u8g2.sendBuffer();
@@ -108,12 +110,25 @@ void loop(void)
   char positionString[BufSize];
   snprintf(positionString, BufSize, "%d", integerPosition);
 
+  const char *string_list =
+      "Altocumulus\n"
+      "Altostratus\n"
+      "Cirrocumulus\n"
+      "Cirrostratus\n"
+      "Cirrus\n"
+      "Cumulonimbus\n"
+      "Cumulus\n"
+      "Nimbostratus\n"
+      "Stratocumulus\n"
+      "Stratus";
+
   u8g2.clearBuffer();
   u8g2.drawHLine(0, 15, 128);
   u8g2.setFont(u8g2_font_victoriabold8_8u);
   u8g2.setFontPosCenter();
-  u8g2.drawStr((64 - (u8g2.getStrWidth("MAIN MENU") / 2)), 10, "MAIN MENU");
+  u8g2.drawStr((64 - (u8g2.getStrWidth("MAIN MENU") / 2)), 8, "MAIN MENU");
+  u8g2.drawStr(110, 8, positionString);
   u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
-  u8g2.drawStr(0, 50, "ay iss workin'");
+  u8g2.drawStr(0, 50, "o");
   u8g2.sendBuffer();
 }
