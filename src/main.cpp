@@ -77,7 +77,41 @@ void setup(void)
     u8g2.sendBuffer();
     delay(1);
   }
+  u8g2.setFont(u8g2_font_6x12_tr);
 }
+
+uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
+{
+  knob.update();
+  int turn = knob.positionDelta();
+
+  if (fancyknob.positionDelta() == 1) //rotary turn left
+
+  {
+    return U8X8_MSG_GPIO_MENU_UP;
+  }
+  if (fancyknob.positionDelta() == -1) //rotary turn right
+
+  {
+    return U8X8_MSG_GPIO_MENU_DOWN;
+  }
+
+  Serial.println(turn);
+}
+
+const char *string_list =
+    "Altocumulus\n"
+    "Altostratus\n"
+    "Cirrocumulus\n"
+    "Cirrostratus\n"
+    "Cirrus\n"
+    "Cumulonimbus\n"
+    "Cumulus\n"
+    "Nimbostratus\n"
+    "Stratocumulus\n"
+    "Stratus";
+
+uint8_t current_selection = 0;
 
 void loop(void)
 {
@@ -110,18 +144,29 @@ void loop(void)
   char positionString[BufSize];
   snprintf(positionString, BufSize, "%d", integerPosition);
 
-  const char *string_list =
-      "Altocumulus\n"
-      "Altostratus\n"
-      "Cirrocumulus\n"
-      "Cirrostratus\n"
-      "Cirrus\n"
-      "Cumulonimbus\n"
-      "Cumulus\n"
-      "Nimbostratus\n"
-      "Stratocumulus\n"
-      "Stratus";
+  current_selection = u8g2.userInterfaceSelectionList(
+      "Cloud Types",
+      current_selection,
+      string_list);
 
+  if (current_selection == 0)
+  {
+    u8g2.userInterfaceMessage(
+        "Nothing selected.",
+        "",
+        "",
+        " ok ");
+  }
+  else
+  {
+    u8g2.userInterfaceMessage(
+        "Selection:",
+        u8x8_GetStringLineStart(current_selection - 1, string_list),
+        "",
+        " ok \n cancel ");
+  }
+
+  /*
   u8g2.clearBuffer();
   u8g2.drawHLine(0, 15, 128);
   u8g2.setFont(u8g2_font_victoriabold8_8u);
@@ -131,4 +176,5 @@ void loop(void)
   u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
   u8g2.drawStr(0, 50, "o");
   u8g2.sendBuffer();
+*/
 }
