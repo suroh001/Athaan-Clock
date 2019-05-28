@@ -80,24 +80,7 @@ void setup(void)
   u8g2.setFont(u8g2_font_6x12_tr);
 }
 
-uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
-{
-  knob.update();
-  int turn = knob.positionDelta();
 
-  if (fancyknob.positionDelta() == 1) //rotary turn left
-
-  {
-    return U8X8_MSG_GPIO_MENU_UP;
-  }
-  if (fancyknob.positionDelta() == -1) //rotary turn right
-
-  {
-    return U8X8_MSG_GPIO_MENU_DOWN;
-  }
-
-  Serial.println(turn);
-}
 
 const char *string_list =
     "Altocumulus\n"
@@ -115,6 +98,7 @@ uint8_t current_selection = 0;
 
 void loop(void)
 {
+  /*
   static long virtualPosition = 0; // without STATIC it does not count correctly!!!
 
   if (!(digitalRead(PinSW)) && (virtualPosition != 0))
@@ -143,7 +127,7 @@ void loop(void)
   }; // If a is short use a smaller number, eg 5 or 6
   char positionString[BufSize];
   snprintf(positionString, BufSize, "%d", integerPosition);
-
+*/
   current_selection = u8g2.userInterfaceSelectionList(
       "Cloud Types",
       current_selection,
@@ -177,4 +161,32 @@ void loop(void)
   u8g2.drawStr(0, 50, "o");
   u8g2.sendBuffer();
 */
+}
+
+uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
+{
+  static long virtualPosition = 0; // without STATIC it does not count correctly!!!
+
+  if (!(digitalRead(PinSW)) && (virtualPosition != 0))
+  {                      // check if pushbutton is pressed
+    virtualPosition = 0; // if YES, then reset counter to ZERO
+    return U8X8_MSG_GPIO_MENU_SELECT;
+    Serial.print("Reset = "); // Using the word RESET instead of COUNT here to find out a buggy encoder
+    Serial.println(virtualPosition);
+  }
+
+  if (TurnDetected)
+  { // do this only if rotation was detected
+    if (up) {
+      virtualPosition++;
+    return U8X8_MSG_GPIO_MENU_PREV;
+    }
+    else {
+      virtualPosition--;
+    TurnDetected = false; // do NOT repeat IF loop until new rotation detected
+    Serial.print("Count = ");
+    Serial.println(virtualPosition);
+    return U8X8_MSG_GPIO_MENU_NEXT;
+    }
+  }
 }
