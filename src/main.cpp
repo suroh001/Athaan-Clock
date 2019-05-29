@@ -2,6 +2,10 @@
 #include <U8g2lib.h>
 #include <SPI.h>
 #include <Wire.h>
+#include <RTClib.h>
+
+RTC_DS1307 RTC;
+
 
 //U8G2_ST7920_128X64_1_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 8);
 U8G2_ST7920_128X64_F_8080 u8g2(U8G2_R0, 22, 3, 4, 5, 6, 7, 8, 9, 13, U8X8_PIN_NONE, 12, 11);
@@ -49,8 +53,12 @@ void setup(void)
   pinMode(pinB, INPUT);
   pinMode(PinSW, INPUT);
   attachInterrupt(0, isr0, CHANGE); // interrupt 0 is always connected to pin 2 on Arduino UNO
+Wire.begin();
+    RTC.begin();
   Serial.begin(9600);
   Serial.println("Start");
+
+
 
   u8g2.begin();
   delay(1000);
@@ -90,6 +98,8 @@ void setup(void)
 
 void loop(void)
 {
+DateTime now = RTC.now();
+
   static long virtualPosition = 1; // without STATIC it does not count correctly!!!
   static long lastVirtualPosition = 1;
 
@@ -256,3 +266,4 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 
   return userOption;
 }
+
