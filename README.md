@@ -11,3 +11,6 @@ Using U8G2 arduino library to display functions on LCD on Full screen Buffer.
 Configuring rotary encoder in sync with display:
 [![Rotary Encoder Test](Images//rotaryencoder.gif)](https://www.youtube.com/watch?v=2VTkItwqr3U)
 
+Created a user interface menu for user to interact with functions:
+[![Main Menu Structure](Images//menuStructure.gif)](https://www.youtube.com/watch?v=KpKawGa38oY)
+
