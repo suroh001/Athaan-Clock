@@ -15,11 +15,11 @@ const int PinSW = 26; // Used for the push button switch
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
 int currentSelection = 0;
 
-const int buttonPin = 28;     // the number of the pushbutton pin
-const int ledPin =  13;      // the number of the LED pin
+const int buttonPin = 28; // the number of the pushbutton pin
+const int ledPin = 13;    // the number of the LED pin
 
 // variables will change:
-int buttonState = 0;         // variable for reading the pushbutton status
+int buttonState = 0; // variable for reading the pushbutton status
 
 //U8X8_PIN_NONE
 /*
@@ -86,7 +86,6 @@ void setup(void)
     u8g2.sendBuffer();
     delay(1);
   }
-  
 }
 
 void loop(void)
@@ -98,10 +97,14 @@ void loop(void)
   {
     if ((!(digitalRead(PinSW)) && (virtualPosition != 0)))
     {
-      if (lastVirtualPosition == 3) {currentSelection = 3; break;}
-      lastVirtualPosition = virtualPosition; 
-      virtualPosition = 0;                   // if YES, then reset counter to ZERO
-      Serial.print("Reset = ");              // Using the word RESET instead of COUNT here to find out a buggy encoder
+      if (lastVirtualPosition == 3)
+      {
+        currentSelection = 3;
+        break;
+      }
+      lastVirtualPosition = virtualPosition;
+      virtualPosition = 0;      // if YES, then reset counter to ZERO
+      Serial.print("Reset = "); // Using the word RESET instead of COUNT here to find out a buggy encoder
       Serial.println(virtualPosition);
     }
 
@@ -109,10 +112,10 @@ void loop(void)
     { // do this only if rotation was detected
       if (up)
       {
-        if (virtualPosition < 3) 
+        if (virtualPosition < 3)
         {
           virtualPosition++;
-          lastVirtualPosition = virtualPosition; 
+          lastVirtualPosition = virtualPosition;
         }
       }
       if (!up)
@@ -120,13 +123,11 @@ void loop(void)
         if (virtualPosition > 1)
         {
           virtualPosition--;
-          lastVirtualPosition = virtualPosition; 
+          lastVirtualPosition = virtualPosition;
         }
         TurnDetected = false; // do NOT repeat IF loop until new rotation detected
         Serial.print("Count = ");
         Serial.println(virtualPosition);
-
-       
       }
     }
     int menuPosition = virtualPosition;
@@ -135,11 +136,11 @@ void loop(void)
     {
     case 1:
       menuPosition = 33;
-      
+
       break;
     case 2:
       menuPosition = 43;
-      
+
       break;
     case 3:
       menuPosition = 53;
@@ -152,36 +153,48 @@ void loop(void)
     currentSelection = mainMenuOption(menuPosition, virtualPosition, lastVirtualPosition);
   }
 
-  u8g2.clearBuffer();
-  u8g2.setFont(u8g2_font_ncenB10_tf);
-  //Serial.println(u8g2.getStrWidth("Welcome!"));
-  u8g2.drawStr(30, 37, "wagwan");
-  u8g2.sendBuffer();
+  switch (currentSelection)
+  {
+  case 1:
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
+    //Serial.println(u8g2.getStrWidth("Welcome!"));
+    u8g2.drawStr(30, 37, "wagwan");
+    u8g2.sendBuffer();
+
+    break;
+  case 2:
+    
+
+    break;
+  case 3:
+    
+
+    break;
+  default:
+    break;
+  }
 
   buttonState = digitalRead(buttonPin);
 
   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-  if (buttonState == HIGH) {
+  if (buttonState == HIGH)
+  {
     // turn LED on:
     currentSelection = 0;
-    Serial.println("BUTTONS UP");
     virtualPosition = 1;
-  } 
-
+  }
 }
 
 int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 {
   int userOption = 0;
-
-
   if (virtualPos == 0)
   {
     userOption = lastVirtualPos;
 
     return userOption;
   }
-
 
   int integerPosition = int(virtualPos);
   enum
@@ -190,7 +203,8 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
   }; // If a is short use a smaller number, eg 5 or 6
   char positionString[BufSize];
   snprintf(positionString, BufSize, "%d", integerPosition);
-
+  /*
+*/
   u8g2.setFontMode(1);  /* activate transparent font mode */
   u8g2.setDrawColor(1); /* color 1 for the box */
 
@@ -216,7 +230,7 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
   // MAIN MENU ICON MID //
   u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
   u8g2.drawStr(((64 - (u8g2.getStrWidth("U") / 2))), 20, "U");
-/*
+  /*
   // ENCODER COUNTER (DEBUGGING) //
   u8g2.setFont(u8g2_font_blipfest_07_tr);
   u8g2.drawStr(110, 8, positionString);

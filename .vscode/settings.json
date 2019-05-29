@@ -4,5 +4,5 @@
         "PLATFORMIO_CALLER": "vscode"
     },
     "C_Cpp.errorSquiggles": "Disabled",
-    "workbench.colorTheme": "Kimbie Dark"
+    "workbench.colorTheme": "Monokai Dimmed"
 }
