@@ -98,7 +98,8 @@ void loop(void)
   {
     if ((!(digitalRead(PinSW)) && (virtualPosition != 0)))
     {
-      lastVirtualPosition = virtualPosition; // check if pushbutton is pressed
+      if (lastVirtualPosition == 3) {currentSelection = 3; break;}
+      lastVirtualPosition = virtualPosition; 
       virtualPosition = 0;                   // if YES, then reset counter to ZERO
       Serial.print("Reset = ");              // Using the word RESET instead of COUNT here to find out a buggy encoder
       Serial.println(virtualPosition);
@@ -108,9 +109,10 @@ void loop(void)
     { // do this only if rotation was detected
       if (up)
       {
-        if (virtualPosition < 4) 
+        if (virtualPosition < 3) 
         {
           virtualPosition++;
+          lastVirtualPosition = virtualPosition; 
         }
       }
       if (!up)
@@ -118,24 +120,19 @@ void loop(void)
         if (virtualPosition > 1)
         {
           virtualPosition--;
+          lastVirtualPosition = virtualPosition; 
         }
         TurnDetected = false; // do NOT repeat IF loop until new rotation detected
         Serial.print("Count = ");
         Serial.println(virtualPosition);
-        Serial.print(" ");
-        Serial.print("last Count = ");
-        Serial.print(lastVirtualPosition);
+
+       
       }
     }
     int menuPosition = virtualPosition;
 
     switch (menuPosition)
     {
-    case -1:
-      menuPosition = 33;
-      
-      break;
-
     case 1:
       menuPosition = 33;
       
@@ -146,14 +143,9 @@ void loop(void)
       break;
     case 3:
       menuPosition = 53;
-      
-      break;
-    case 4:
-      menuPosition = 53;
-      
+
       break;
     default:
-      menuPosition = 33;
       break;
     }
 
@@ -182,9 +174,11 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 {
   int userOption = 0;
 
+
   if (virtualPos == 0)
   {
     userOption = lastVirtualPos;
+
     return userOption;
   }
 
