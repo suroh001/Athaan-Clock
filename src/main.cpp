@@ -12,6 +12,8 @@ volatile boolean up;
 const int pinA = 2;   // Used for generating interrupts using CLK signal
 const int pinB = 24;  // Used for reading DT signal
 const int PinSW = 26; // Used for the push button switch
+int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
+int currentSelection = 0;
 
 //U8X8_PIN_NONE
 /*
@@ -47,7 +49,7 @@ void setup(void)
   delay(1000);
 
   u8g2.clearBuffer();
-  u8g2.setFont(u8g2_font_ncenB10_tr);
+  u8g2.setFont(u8g2_font_ncenB10_tf);
   //Serial.println(u8g2.getStrWidth("Welcome!"));
   u8g2.drawStr((64 - (u8g2.getStrWidth("Habeeb's") / 2)), 37, "Habeeb's");
   u8g2.sendBuffer();
@@ -63,7 +65,7 @@ void setup(void)
   }
 
   u8g2.clearBuffer();
-  u8g2.setFont(u8g2_font_ncenB10_tr);
+  u8g2.setFont(u8g2_font_ncenB10_tf);
   //Serial.println(u8g2.getStrWidth("Welcome!"));
   u8g2.drawStr((64 - (u8g2.getStrWidth("Athaan Clock") / 2)), 37, "Athaan Clock");
   u8g2.sendBuffer();
@@ -77,116 +79,139 @@ void setup(void)
     u8g2.sendBuffer();
     delay(1);
   }
-  u8g2.setFont(u8g2_font_6x12_tr);
+  
 }
-
-
-
-const char *string_list =
-    "Altocumulus\n"
-    "Altostratus\n"
-    "Cirrocumulus\n"
-    "Cirrostratus\n"
-    "Cirrus\n"
-    "Cumulonimbus\n"
-    "Cumulus\n"
-    "Nimbostratus\n"
-    "Stratocumulus\n"
-    "Stratus";
-
-uint8_t current_selection = 0;
 
 void loop(void)
 {
-  /*
-  static long virtualPosition = 0; // without STATIC it does not count correctly!!!
+  static long virtualPosition = 1; // without STATIC it does not count correctly!!!
+  long lastVirtualPosition = 1;
 
-  if (!(digitalRead(PinSW)) && (virtualPosition != 0))
-  {                           // check if pushbutton is pressed
-    virtualPosition = 0;      // if YES, then reset counter to ZERO
-    Serial.print("Reset = "); // Using the word RESET instead of COUNT here to find out a buggy encoder
+  while (currentSelection == 0)
+  {
+    if ((!(digitalRead(PinSW)) && (virtualPosition != 0)))
+    {
+      lastVirtualPosition = virtualPosition; // check if pushbutton is pressed
+      virtualPosition = 0;                   // if YES, then reset counter to ZERO
+      Serial.print("Reset = ");              // Using the word RESET instead of COUNT here to find out a buggy encoder
+      Serial.println(virtualPosition);
+    }
 
-    Serial.println(virtualPosition);
+    if (TurnDetected)
+    { // do this only if rotation was detected
+      if (up)
+      {
+        if (virtualPosition < 3)
+        {
+          virtualPosition++;
+        }
+      }
+      if (!up)
+      {
+        if (virtualPosition > 1)
+        {
+          virtualPosition--;
+        }
+        TurnDetected = false; // do NOT repeat IF loop until new rotation detected
+        Serial.print("Count = ");
+        Serial.println(virtualPosition);
+      }
+    }
+    int menuPosition = virtualPosition;
+
+    switch (menuPosition)
+    {
+    case 1:
+      menuPosition = 33;
+      break;
+    case 2:
+      menuPosition = 43;
+      break;
+    case 3:
+      menuPosition = 53;
+      break;
+    default:
+      break;
+    }
+
+    currentSelection = mainMenuOption(menuPosition, virtualPosition, lastVirtualPosition);
   }
 
-  if (TurnDetected)
-  { // do this only if rotation was detected
-    if (up)
-      virtualPosition++;
-    else
-      virtualPosition--;
-    TurnDetected = false; // do NOT repeat IF loop until new rotation detected
-    Serial.print("Count = ");
-    Serial.println(virtualPosition);
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB10_tf);
+  //Serial.println(u8g2.getStrWidth("Welcome!"));
+  u8g2.drawStr(30, 37, "wagwan");
+  u8g2.sendBuffer();
+}
+
+int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
+{
+  int userOption = 0;
+
+  if (virtualPos == 0)
+  {
+    Serial.println("caught");
+    userOption = lastVirtualPos;
+    return userOption;
   }
 
-  int integerPosition = int(virtualPosition);
+
+  int integerPosition = int(virtualPos);
   enum
   {
     BufSize = 6
   }; // If a is short use a smaller number, eg 5 or 6
   char positionString[BufSize];
   snprintf(positionString, BufSize, "%d", integerPosition);
-*/
-  current_selection = u8g2.userInterfaceSelectionList(
-      "Cloud Types",
-      current_selection,
-      string_list);
 
-  if (current_selection == 0)
-  {
-    u8g2.userInterfaceMessage(
-        "Nothing selected.",
-        "",
-        "",
-        " ok ");
-  }
-  else
-  {
-    u8g2.userInterfaceMessage(
-        "Selection:",
-        u8x8_GetStringLineStart(current_selection - 1, string_list),
-        "",
-        " ok \n cancel ");
-  }
+  u8g2.setFontMode(1);  /* activate transparent font mode */
+  u8g2.setDrawColor(1); /* color 1 for the box */
 
-  /*
   u8g2.clearBuffer();
-  u8g2.drawHLine(0, 15, 128);
+
+  // SELECTION BOX //
+  u8g2.setDrawColor(1);
+  u8g2.drawBox(0, menuPos - 2, 128, 10);
+
+  // HORIZONTAL RULE //
+  u8g2.drawHLine(0, 27, 128);
+
+  // MAIN MENU TITLE //
   u8g2.setFont(u8g2_font_victoriabold8_8u);
   u8g2.setFontPosCenter();
-  u8g2.drawStr((64 - (u8g2.getStrWidth("MAIN MENU") / 2)), 8, "MAIN MENU");
-  u8g2.drawStr(110, 8, positionString);
+  u8g2.drawStr(((64 - (u8g2.getStrWidth("MAIN  MENU") / 2)) + 3), 20, "MAIN");
+  u8g2.drawStr(((64 - (u8g2.getStrWidth("MAIN  MENU") / 2)) - 1), 20, "      MENU");
+
+  // TOP LEVEL TITLE //
+  u8g2.setFont(u8g2_font_blipfest_07_tr);
+  u8g2.drawStr((64 - (u8g2.getStrWidth("HABEEB'S ATHAAN CLOCK") / 2)), 8, "HABEEB'S ATHAAN CLOCK");
+
+  // MAIN MENU ICON MID //
   u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
-  u8g2.drawStr(0, 50, "o");
-  u8g2.sendBuffer();
+  u8g2.drawStr(((64 - (u8g2.getStrWidth("U") / 2))), 20, "U");
+/*
+  // ENCODER COUNTER (DEBUGGING) //
+  u8g2.setFont(u8g2_font_blipfest_07_tr);
+  u8g2.drawStr(110, 8, positionString);
 */
-}
+  // ARROW //
+  u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
+  u8g2.setDrawColor(2);
+  u8g2.drawStr(0, (menuPos + 3), "o");
 
-uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
-{
-  static long virtualPosition = 0; // without STATIC it does not count correctly!!!
+  // START OPTION //
+  u8g2.setFont(u8g2_font_profont10_tf);
+  u8g2.drawStr((64 - (u8g2.getStrWidth("START") / 2)), 37, "START");
 
-  if (!(digitalRead(PinSW)) && (virtualPosition != 0))
-  {                      // check if pushbutton is pressed
-    virtualPosition = 0; // if YES, then reset counter to ZERO
-    return U8X8_MSG_GPIO_MENU_SELECT;
-    Serial.print("Reset = "); // Using the word RESET instead of COUNT here to find out a buggy encoder
-    Serial.println(virtualPosition);
-  }
+  // CONFIGURE OPTION //
+  u8g2.setFont(u8g2_font_profont10_tf);
+  u8g2.drawStr((64 - (u8g2.getStrWidth("CONFIGURE") / 2)), 47, "CONFIGURE");
 
-  if (TurnDetected)
-  { // do this only if rotation was detected
-    if (up) {
-      virtualPosition++;
-    return U8X8_MSG_GPIO_MENU_PREV;
-    }
-    else {
-      virtualPosition--;
-    TurnDetected = false; // do NOT repeat IF loop until new rotation detected
-    Serial.print("Count = ");
-    Serial.println(virtualPosition);
-    return U8X8_MSG_GPIO_MENU_NEXT;
-    }
-  }
+  // ABOUT OPTION //
+  u8g2.setFont(u8g2_font_profont10_tf);
+  u8g2.drawStr((64 - (u8g2.getStrWidth("ABOUT") / 2)), 57, "ABOUT");
+
+  u8g2.sendBuffer();
+
+  return userOption;
 }
