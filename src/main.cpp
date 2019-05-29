@@ -15,6 +15,12 @@ const int PinSW = 26; // Used for the push button switch
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
 int currentSelection = 0;
 
+const int buttonPin = 28;     // the number of the pushbutton pin
+const int ledPin =  13;      // the number of the LED pin
+
+// variables will change:
+int buttonState = 0;         // variable for reading the pushbutton status
+
 //U8X8_PIN_NONE
 /*
 void setup(void) {
@@ -38,6 +44,7 @@ void isr0()
 
 void setup(void)
 {
+  pinMode(buttonPin, INPUT);
   pinMode(pinA, INPUT);
   pinMode(pinB, INPUT);
   pinMode(PinSW, INPUT);
@@ -85,7 +92,7 @@ void setup(void)
 void loop(void)
 {
   static long virtualPosition = 1; // without STATIC it does not count correctly!!!
-  long lastVirtualPosition = 1;
+  static long lastVirtualPosition = 1;
 
   while (currentSelection == 0)
   {
@@ -101,7 +108,7 @@ void loop(void)
     { // do this only if rotation was detected
       if (up)
       {
-        if (virtualPosition < 3)
+        if (virtualPosition < 4) 
         {
           virtualPosition++;
         }
@@ -115,22 +122,38 @@ void loop(void)
         TurnDetected = false; // do NOT repeat IF loop until new rotation detected
         Serial.print("Count = ");
         Serial.println(virtualPosition);
+        Serial.print(" ");
+        Serial.print("last Count = ");
+        Serial.print(lastVirtualPosition);
       }
     }
     int menuPosition = virtualPosition;
 
     switch (menuPosition)
     {
+    case -1:
+      menuPosition = 33;
+      
+      break;
+
     case 1:
       menuPosition = 33;
+      
       break;
     case 2:
       menuPosition = 43;
+      
       break;
     case 3:
       menuPosition = 53;
+      
+      break;
+    case 4:
+      menuPosition = 53;
+      
       break;
     default:
+      menuPosition = 33;
       break;
     }
 
@@ -142,6 +165,17 @@ void loop(void)
   //Serial.println(u8g2.getStrWidth("Welcome!"));
   u8g2.drawStr(30, 37, "wagwan");
   u8g2.sendBuffer();
+
+  buttonState = digitalRead(buttonPin);
+
+  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
+  if (buttonState == HIGH) {
+    // turn LED on:
+    currentSelection = 0;
+    Serial.println("BUTTONS UP");
+    virtualPosition = 1;
+  } 
+
 }
 
 int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
@@ -150,7 +184,6 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 
   if (virtualPos == 0)
   {
-    Serial.println("caught");
     userOption = lastVirtualPos;
     return userOption;
   }
