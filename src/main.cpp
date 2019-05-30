@@ -41,23 +41,6 @@ int currentSelection = 0;
 // Function Declarations //
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
 
-
-
-//U8X8_PIN_NONE
-/*
-void setup(void) {
-  u8g2.begin();
-}
-
-void loop(void) {
-  u8g2.firstPage();
-  do {
-    u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.drawStr(0,24,"Hello World!");
-  } while ( u8g2.nextPage() );
-}
-*/
-
 // what? you never seen an interrupt routine before? //
 void isr0()
 {
@@ -122,7 +105,7 @@ void loop(void)
 
     if ((!(digitalRead(PinSW)) && (virtualPosition != 0)))
     {
-
+      // This has to be here for some reason idk why dont ask me //
       if (lastVirtualPosition == 3)
       {
         currentSelection = 3;
@@ -204,23 +187,37 @@ void loop(void)
     integerSecond = now.second();
     snprintf(charSecond, BufSize, "%02d", integerSecond);
 
-    char str[15];
-    strcpy (str,charHour);
-    strcat (str,":");
-    strcat (str,charMinute);
-    strcat (str,":");
-    strcat (str,charSecond);
-    puts (str);
-
+    char timeStr[15];
+    strcpy (timeStr,charHour);
+    strcat (timeStr,":");
+    strcat (timeStr,charMinute);
+    strcat (timeStr,":");
+    strcat (timeStr,charSecond);
+    puts (timeStr);
 
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_crox5hb_tn);
 
-    u8g2.drawStr(((64 - (u8g2.getStrWidth(str) / 2))-3), 32, str);
+    // i basically just invented time //
+    u8g2.setFont(u8g2_font_crox5hb_tn);
+    u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2))-3), 35, timeStr);
+
+    // 'the time is' pretext //
     u8g2.setFont(u8g2_font_blipfest_07_tr);
     u8g2.drawStr(((64 - (u8g2.getStrWidth("THE TIME IS:") / 2))), 15, "THE TIME IS:");
-    u8g2.sendBuffer();
 
+    u8g2.setFont(u8g2_font_blipfest_07_tn);
+    int moveValtext = ((u8g2.getStrWidth(" 04:20")) / 2);
+
+    u8g2.setFont(u8g2_font_baby_tf);
+    
+    u8g2.drawStr(((64 - (u8g2.getStrWidth("FAJR PRAYER IS AT ") / 2)) - moveValtext), 54, "FAJR PRAYER IS AT ");
+
+    u8g2.setFont(u8g2_font_baby_tf);
+    int moveValprayer = (64 - (u8g2.getStrWidth("FAJR PRAYER IS AT ") / 2) + (u8g2.getStrWidth("FAJR PRAYER IS AT ")));
+    u8g2.setFont(u8g2_font_blipfest_07_tn);
+    u8g2.drawStr(moveValprayer - moveValtext, 53, " 04:20");
+    
+    u8g2.sendBuffer();
   }
   break;
   case 2:
@@ -305,7 +302,7 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
   // ENCODER COUNTER (DEBUGGING) //
   u8g2.setFont(u8g2_font_blipfest_07_tr);
   u8g2.drawStr(110, 8, positionString);
-*/
+  */
   // ARROW //
   u8g2.setFont(u8g2_font_open_iconic_all_1x_t);
   u8g2.setDrawColor(2);
