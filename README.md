@@ -1,3 +1,4 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # AthaanClock
 I'm creating a device that plays the islamic call to prayer at the exact prayer times.
 
