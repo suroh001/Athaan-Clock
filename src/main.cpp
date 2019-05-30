@@ -199,7 +199,7 @@ void loop(void)
 
     // i basically just invented time //
     u8g2.setFont(u8g2_font_crox5hb_tn);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2))-3), 35, timeStr);
+    u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2))-2), 35, timeStr);
 
     // 'the time is' pretext //
     u8g2.setFont(u8g2_font_blipfest_07_tr);
@@ -324,3 +324,4 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 
   return userOption;
 }
+
