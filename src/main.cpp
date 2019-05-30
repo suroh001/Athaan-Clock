@@ -6,7 +6,6 @@
 
 RTC_DS1307 RTC;
 
-
 //U8G2_ST7920_128X64_1_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 8);
 U8G2_ST7920_128X64_F_8080 u8g2(U8G2_R0, 22, 3, 4, 5, 6, 7, 8, 9, 13, U8X8_PIN_NONE, 12, 11);
 
@@ -53,12 +52,10 @@ void setup(void)
   pinMode(pinB, INPUT);
   pinMode(PinSW, INPUT);
   attachInterrupt(0, isr0, CHANGE); // interrupt 0 is always connected to pin 2 on Arduino UNO
-Wire.begin();
-    RTC.begin();
+  Wire.begin();
+  RTC.begin();
   Serial.begin(9600);
   Serial.println("Start");
-
-
 
   u8g2.begin();
   delay(1000);
@@ -98,7 +95,7 @@ Wire.begin();
 
 void loop(void)
 {
-DateTime now = RTC.now();
+  DateTime now = RTC.now();
 
   static long virtualPosition = 1; // without STATIC it does not count correctly!!!
   static long lastVirtualPosition = 1;
@@ -166,19 +163,37 @@ DateTime now = RTC.now();
   switch (currentSelection)
   {
   case 1:
+
+    int integerHour = now.hour();
+     enum { BufSize = 6 }; // If a is short use a smaller number, eg 5 or 6
+    char charHour[BufSize];
+    snprintf(charHour, BufSize, "%d", integerHour);
+
+    int integerMinute = now.minute();
+     enum { BuffSize = 6 }; // If a is short use a smaller number, eg 5 or 6
+    char charMinute[BuffSize];
+    snprintf(charMinute, BuffSize, "%d", integerMinute);
+
+    int integerSecond = now.second();
+    char charSecond[BuffSize];
+    snprintf(charSecond, BuffSize, "%d", integerSecond);
+
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB10_tf);
     //Serial.println(u8g2.getStrWidth("Welcome!"));
-    u8g2.drawStr(30, 37, "wagwan");
+    u8g2.drawStr(8, 20, charHour);
+    u8g2.drawStr(15, 40, charMinute);
+    u8g2.drawStr(30, 40, charSecond);
     u8g2.sendBuffer();
+    Serial.println(now.hour());
+    Serial.println(now.minute());
+    Serial.println(now.second());
 
     break;
   case 2:
-    
 
     break;
   case 3:
-    
 
     break;
   default:
@@ -209,10 +224,10 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
   int integerPosition = int(virtualPos);
   enum
   {
-    BufSize = 6
+    BufffSize = 6
   }; // If a is short use a smaller number, eg 5 or 6
-  char positionString[BufSize];
-  snprintf(positionString, BufSize, "%d", integerPosition);
+  char positionString[BufffSize];
+  snprintf(positionString, BufffSize, "%d", integerPosition);
   /*
 */
   u8g2.setFontMode(1);  /* activate transparent font mode */
@@ -266,4 +281,3 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 
   return userOption;
 }
-
