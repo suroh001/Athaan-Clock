@@ -16,6 +16,8 @@ const int pinA = 2;   // Used for generating interrupts using CLK signal
 const int pinB = 24;  // Used for reading DT signal
 const int PinSW = 26; // Used for the push button switch
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
+int getRotaryEncoder(int vPosition, int lastVPosition, boolean boolDetected, boolean boolUp, int cSelection);
+
 int currentSelection = 0;
 
 const int buttonPin = 28; // the number of the pushbutton pin
@@ -100,10 +102,15 @@ void loop(void)
   static long virtualPosition = 1; // without STATIC it does not count correctly!!!
   static long lastVirtualPosition = 1;
 
-  while (currentSelection == 0)
+
+
+      while (currentSelection == 0)
   {
+    getRotaryEncoder(virtualPosition, lastVirtualPosition, TurnDetected, up, currentSelection);
+
     if ((!(digitalRead(PinSW)) && (virtualPosition != 0)))
     {
+
       if (lastVirtualPosition == 3)
       {
         currentSelection = 3;
@@ -160,23 +167,29 @@ void loop(void)
     currentSelection = mainMenuOption(menuPosition, virtualPosition, lastVirtualPosition);
   }
 
+  int integerHour;
+    enum {BufSize = 6}; // If a is short use a smaller number, eg 5 or 6
+    char charHour[BufSize];
+
+
+    int integerMinute;
+    char charMinute[BufSize];
+
+
+    int integerSecond;
+    char charSecond[BufSize];
+
+
   switch (currentSelection)
   {
   case 1:
-
-    int integerHour = now.hour();
-     enum { BufSize = 6 }; // If a is short use a smaller number, eg 5 or 6
-    char charHour[BufSize];
-    snprintf(charHour, BufSize, "%d", integerHour);
-
-    int integerMinute = now.minute();
-     enum { BuffSize = 6 }; // If a is short use a smaller number, eg 5 or 6
-    char charMinute[BuffSize];
-    snprintf(charMinute, BuffSize, "%d", integerMinute);
-
-    int integerSecond = now.second();
-    char charSecond[BuffSize];
-    snprintf(charSecond, BuffSize, "%d", integerSecond);
+{
+    integerHour = now.hour();
+    snprintf(charHour, BufSize, "%02d", integerHour);
+    integerMinute = now.minute();
+    snprintf(charMinute, BufSize, "%02d", integerMinute);
+    integerSecond = now.second();
+    snprintf(charSecond, BufSize, "%02d", integerSecond);
 
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB10_tf);
@@ -185,16 +198,24 @@ void loop(void)
     u8g2.drawStr(15, 40, charMinute);
     u8g2.drawStr(30, 40, charSecond);
     u8g2.sendBuffer();
-    Serial.println(now.hour());
-    Serial.println(now.minute());
-    Serial.println(now.second());
 
+}
     break;
-  case 2:
+  case 2: {
+  u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
 
+    u8g2.drawStr(30, 40, "ayo number 2");
+    u8g2.sendBuffer();
+  }
     break;
-  case 3:
+  case 3:{
+  u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
 
+    u8g2.drawStr(30, 40, "ayo number tree");
+    u8g2.sendBuffer();
+  }
     break;
   default:
     break;
@@ -209,6 +230,12 @@ void loop(void)
     currentSelection = 0;
     virtualPosition = 1;
   }
+}
+
+int getRotaryEncoder(int vPosition, int lastVPosition, boolean boolDetected, boolean boolUp, int cSelection)
+{
+
+  return;
 }
 
 int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
