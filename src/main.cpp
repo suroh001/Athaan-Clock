@@ -1,30 +1,47 @@
+// ============================================================
+// Project:     Athaan Clock
+// ============================================================
+// Author:      Habeeb Surooprajally
+// Project start date: 25.05.2019
+// ============================================================
+// Description:
+// The final result will be a highly configurable device which
+// will play the islamic call to prayer at the appropriate time
+// day.
+// ============================================================
+
+// Just a couple libraries //
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <RTClib.h>
+#include <stdio.h>
+#include <string.h>
 
+// Initilising tha RTC //
 RTC_DS1307 RTC;
 
-//U8G2_ST7920_128X64_1_SW_SPI u8g2(U8G2_R0, 13, 11, 10, 8);
+// Initilising tha Display //
 U8G2_ST7920_128X64_F_8080 u8g2(U8G2_R0, 22, 3, 4, 5, 6, 7, 8, 9, 13, U8X8_PIN_NONE, 12, 11);
 
+// Some cool Variables that you can access anywhere //
 volatile boolean TurnDetected;
 volatile boolean up;
-
-const int pinA = 2;   // Used for generating interrupts using CLK signal
-const int pinB = 24;  // Used for reading DT signal
-const int PinSW = 26; // Used for the push button switch
-int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
-int getRotaryEncoder(int vPosition, int lastVPosition, boolean boolDetected, boolean boolUp, int cSelection);
-
-int currentSelection = 0;
-
+const int pinA = 2;              // Used for generating interrupts using CLK signal
+const int pinB = 24;             // Used for reading DT signal
+const int PinSW = 26;            // Used for the push button switch
+static long virtualPosition = 1; // without STATIC it does not count correctly!!!
+static long lastVirtualPosition = 1;
 const int buttonPin = 28; // the number of the pushbutton pin
 const int ledPin = 13;    // the number of the LED pin
-
-// variables will change:
 int buttonState = 0; // variable for reading the pushbutton status
+int currentSelection = 0;
+
+// Function Declarations //
+int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
+
+
 
 //U8X8_PIN_NONE
 /*
@@ -41,6 +58,7 @@ void loop(void) {
 }
 */
 
+// what? you never seen an interrupt routine before? //
 void isr0()
 {
   up = (digitalRead(pinA) == digitalRead(pinB));
@@ -99,14 +117,8 @@ void loop(void)
 {
   DateTime now = RTC.now();
 
-  static long virtualPosition = 1; // without STATIC it does not count correctly!!!
-  static long lastVirtualPosition = 1;
-
-
-
-      while (currentSelection == 0)
+  while (currentSelection == 0)
   {
-    getRotaryEncoder(virtualPosition, lastVirtualPosition, TurnDetected, up, currentSelection);
 
     if ((!(digitalRead(PinSW)) && (virtualPosition != 0)))
     {
@@ -168,22 +180,23 @@ void loop(void)
   }
 
   int integerHour;
-    enum {BufSize = 6}; // If a is short use a smaller number, eg 5 or 6
-    char charHour[BufSize];
+  enum
+  {
+    BufSize = 6
+  }; // If a is short use a smaller number, eg 5 or 6
+  char charHour[BufSize];
 
+  int integerMinute;
+  char charMinute[BufSize];
 
-    int integerMinute;
-    char charMinute[BufSize];
-
-
-    int integerSecond;
-    char charSecond[BufSize];
-
+  int integerSecond;
+  char charSecond[BufSize];
+  
 
   switch (currentSelection)
   {
   case 1:
-{
+  {
     integerHour = now.hour();
     snprintf(charHour, BufSize, "%02d", integerHour);
     integerMinute = now.minute();
@@ -191,32 +204,43 @@ void loop(void)
     integerSecond = now.second();
     snprintf(charSecond, BufSize, "%02d", integerSecond);
 
+    char str[15];
+    strcpy (str,charHour);
+    strcat (str,":");
+    strcat (str,charMinute);
+    strcat (str,":");
+    strcat (str,charSecond);
+    puts (str);
+
+
     u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_ncenB10_tf);
-    //Serial.println(u8g2.getStrWidth("Welcome!"));
-    u8g2.drawStr(8, 20, charHour);
-    u8g2.drawStr(15, 40, charMinute);
-    u8g2.drawStr(30, 40, charSecond);
+    u8g2.setFont(u8g2_font_crox5hb_tn);
+
+    u8g2.drawStr(((64 - (u8g2.getStrWidth(str) / 2))-3), 32, str);
+    u8g2.setFont(u8g2_font_blipfest_07_tr);
+    u8g2.drawStr(((64 - (u8g2.getStrWidth("THE TIME IS:") / 2))), 15, "THE TIME IS:");
     u8g2.sendBuffer();
 
-}
-    break;
-  case 2: {
-  u8g2.clearBuffer();
+  }
+  break;
+  case 2:
+  {
+    u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB10_tf);
 
     u8g2.drawStr(30, 40, "ayo number 2");
     u8g2.sendBuffer();
   }
-    break;
-  case 3:{
-  u8g2.clearBuffer();
+  break;
+  case 3:
+  {
+    u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB10_tf);
 
     u8g2.drawStr(30, 40, "ayo number tree");
     u8g2.sendBuffer();
   }
-    break;
+  break;
   default:
     break;
   }
@@ -232,11 +256,6 @@ void loop(void)
   }
 }
 
-int getRotaryEncoder(int vPosition, int lastVPosition, boolean boolDetected, boolean boolUp, int cSelection)
-{
-
-  return;
-}
 
 int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 {
