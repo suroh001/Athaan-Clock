@@ -14,11 +14,10 @@ Fully configured display:
 Using U8G2 arduino library to display functions on LCD on Full screen Buffer.
 
 Configuring rotary encoder in sync with display:
-[![Rotary Encoder Test](Images//rotaryencoder.gif)](https://www.youtube.com/watch?v=2VTkItwqr3U)
-<img src="https://github.com/favicon.ico" width="720">
+<img src="https://raw.githubusercontent.com/suroh001/AthaanClock/master/Images/rotaryencoder.gif" width="720">
 
 Created a user interface menu for user to interact with functions:
-[![Main Menu Structure](Images//menuStructure.gif)](https://www.youtube.com/watch?v=KpKawGa38oY)
+<img src="https://raw.githubusercontent.com/suroh001/AthaanClock/master/Images/menuStructure.gif" width="720">
 
 [![ForTheBadge built-with-swag](http://ForTheBadge.com/images/badges/built-with-swag.svg)](https://GitHub.com/suroh001/)
 [![ForTheBadge powered-by-electricity](http://ForTheBadge.com/images/badges/powered-by-electricity.svg)](http://ForTheBadge.com)
