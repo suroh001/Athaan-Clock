@@ -3,7 +3,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://github.com/suroh001/AthaanClock/issues/new)
 
-# Athaan Clock
+# Habeeb's Athaan Clock
 I'm creating a device that plays the islamic call to prayer at the exact prayer times.
 
 Currently, I'm using the (rather buggy) ST7290 LCD Display with Arduino Mega2560 and A Keyes rotary encoder to allow the user to configre athaan settings.
