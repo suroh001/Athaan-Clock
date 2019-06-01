@@ -39,35 +39,15 @@ int buttonState = 0;      // variable for reading the pushbutton status
 int currentSelection = 0;
 double times[sizeof(TimeName) / sizeof(char *)];
 
-
 // Function Declarations //
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
 void p(char *fmt, ...);
 char *getNextPTimeName(double &pTime, char *pTimeName);
-int getNextPTime(double &pTime, char *pTimeName);
+double &getNextPTime(double &pTime, char *pTimeName);
 
+// Variable Function Declarations //
 char *pTimeName1 = getNextPTimeName(times[NULL], TimeName[NULL]);
-
-// Generic catch-all implementation.
-template <typename T_ty>
-struct TypeInfo
-{
-  static const char *name;
-};
-template <typename T_ty>
-const char *TypeInfo<T_ty>::name = "unknown";
-
-// Handy macro to make querying stuff easier.
-#define TYPE_NAME(var) TypeInfo<typeof(var)>::name
-
-// Handy macro to make defining stuff easier.
-#define MAKE_TYPE_INFO(type) template <> \
-                             const char *TypeInfo<type>::name = #type;
-
-// Type-specific implementations.
-MAKE_TYPE_INFO(int)
-MAKE_TYPE_INFO(float)
-MAKE_TYPE_INFO(short)
+double &pTime1 = getNextPTime(times[NULL], TimeName[NULL]);
 
 // what? you never seen an interrupt routine before? //
 void isr0()
@@ -140,6 +120,7 @@ void setup(void)
 
 void loop(void)
 {
+  pTimeName1 = getNextPTimeName(times[NULL], TimeName[NULL]);
 
   while (currentSelection == 0)
   {
@@ -203,59 +184,67 @@ void loop(void)
     currentSelection = mainMenuOption(menuPosition, virtualPosition, lastVirtualPosition);
   }
 
+  // FORMATTING VARIABLES //
+  int moveValtext;
+  int moveValprayer;
+
+  // ANIMATED CLOCK //
   int integerHour;
   enum
   {
     BufSize = 6
   }; // If a is short use a smaller number, eg 5 or 6
   char charHour[BufSize];
-
   int integerMinute;
   char charMinute[BufSize];
-
   int integerSecond;
   char charSecond[BufSize];
+  integerHour = hour();
+  snprintf(charHour, BufSize, "%02d", integerHour);
+  integerMinute = minute();
+  snprintf(charMinute, BufSize, "%02d", integerMinute);
+  integerSecond = second();
+  snprintf(charSecond, BufSize, "%02d", integerSecond);
+  char timeStr[15];
+  strcpy(timeStr, charHour);
+  strcat(timeStr, ":");
+  strcat(timeStr, charMinute);
+  strcat(timeStr, ":");
+  strcat(timeStr, charSecond);
+  puts(timeStr);
 
-  int moveValtext;
-  int moveValprayer;
+  // NAME OF NEXT PRAYER //
+  String upperPTimeName = String(pTimeName1);
+  upperPTimeName.toUpperCase();
+  char charPtime[26];
+  upperPTimeName.toCharArray(charPtime, 25);
+  Serial.println(charPtime);
+  char nextTimePrayerText[50];
+  strcpy(nextTimePrayerText, charPtime);
+  strcat(nextTimePrayerText, " PRAYER IS AT ");
+  puts(nextTimePrayerText);
+
+  // TIME OF NEXT PRAYER //
+  int pTimeHour = (int)pTime1;
+  int pTimeMinute = (pTime1 - pTimeHour) * 60;
+  char charPtimeH[BufSize];
+  char charPtimeM[BufSize];
+  snprintf(charPtimeH, BufSize, "%02d", pTimeHour);
+  snprintf(charPtimeM, BufSize, "%02d", pTimeMinute);
+  char pTimeHourMin[20];
+  strcpy(pTimeHourMin, charPtimeH);
+  strcat(pTimeHourMin, ":");
+  strcat(pTimeHourMin, charPtimeM);
+  puts(pTimeHourMin);
 
   switch (currentSelection)
   {
   case 1:
   {
-    integerHour = hour();
-    snprintf(charHour, BufSize, "%02d", integerHour);
-    integerMinute = minute();
-    snprintf(charMinute, BufSize, "%02d", integerMinute);
-    integerSecond = second();
-    snprintf(charSecond, BufSize, "%02d", integerSecond);
-
-    char timeStr[15];
-    strcpy(timeStr, charHour);
-    strcat(timeStr, ":");
-    strcat(timeStr, charMinute);
-    strcat(timeStr, ":");
-    strcat(timeStr, charSecond);
-    puts(timeStr);
-    
-    //int pTime = getNextPTime(times[NULL], TimeName[NULL]);
-
-    String upperPTimeName = String(pTimeName1);
-    upperPTimeName.toUpperCase();
-
-    char charPtime[25];
-
-    upperPTimeName.toCharArray(charPtime, 25);
-    
-
-    char nextTimePrayerText[50];
-    strcpy(nextTimePrayerText, charPtime);
-    strcat(nextTimePrayerText, " PRAYER IS AT ");
-    puts(nextTimePrayerText);
 
     u8g2.clearBuffer();
 
-    // time thingy //
+    // anime time thingy //
     u8g2.setFont(u8g2_font_crox5hb_tn);
     u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2)) - 2), 35, timeStr);
 
@@ -263,43 +252,29 @@ void loop(void)
     u8g2.setFont(u8g2_font_blipfest_07_tr);
     u8g2.drawStr(((64 - (u8g2.getStrWidth("HABEEB'S ATHAAN CLOCK") / 2))), 15, "HABEEB'S ATHAAN CLOCK");
 
+    // time of tha prayer formatting //
     u8g2.setFont(u8g2_font_blipfest_07_tn);
-    moveValtext = ((u8g2.getStrWidth("04:20")) / 2);
+    moveValtext = ((u8g2.getStrWidth(pTimeHourMin)) / 2);
 
+    // name of tha prayer //
     u8g2.setFont(u8g2_font_baby_tf);
     u8g2.drawStr(((64 - (u8g2.getStrWidth(nextTimePrayerText) / 2)) - moveValtext), 54, nextTimePrayerText);
     //u8g2.drawStr(((64 - (u8g2.getStrWidth((upperPTime + " PRAYER IS AT ")) / 2)) - moveValtext), 54, (upperPTime + " PRAYER IS AT "));
 
+    // time of tha prayer //
     u8g2.setFont(u8g2_font_baby_tf);
     moveValprayer = (64 - (u8g2.getStrWidth(nextTimePrayerText) / 2) + (u8g2.getStrWidth(nextTimePrayerText)));
-
     u8g2.setFont(u8g2_font_blipfest_07_tn);
-    u8g2.drawStr((moveValprayer - moveValtext), 53, "04:20");
+    u8g2.drawStr((moveValprayer - moveValtext), 53, pTimeHourMin);
 
     u8g2.sendBuffer();
   }
   break;
   case 2:
   {
-
-    
-    //int pTime = getNextPTime(times[NULL], TimeName[NULL]);
-    //Serial.println("OG: ");
-    //Serial.print(pTimeName1);
-    //pTimeName1[10] = '\0';
-    
-    String upperPTimeName2 = String(pTimeName1);
-    //Serial.println("String: ");
-    //Serial.print(upperPTimeName);
-
-    char charPtime3[25];
-    upperPTimeName2.toCharArray(charPtime3, 25);
-    //Serial.println("Char: ");
-    //Serial.print(charPtime);
-
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB10_tf);
-    u8g2.drawStr(30, 40, charPtime3);
+    u8g2.drawStr(30, 40, pTimeHourMin);
     u8g2.sendBuffer();
   }
   break;
@@ -431,12 +406,12 @@ char *getNextPTimeName(double &pTime, char *pTimeName)
   }
   pTime = times[i];
   sprintf(pTimeName, "%s", TimeName[i]);
-  Serial.println(pTimeName);
+  //Serial.println(pTimeName);
   //Serial.println( TYPE_NAME(pTimeName) );
   return pTimeName;
 }
 
-int getNextPTime(double &pTime, char *pTimeName)
+double &getNextPTime(double &pTime, char *pTimeName)
 {
   double times[sizeof(TimeName) / sizeof(char *)];
   double currTime = hour() + minute() / 60.0;
