@@ -15,11 +15,12 @@
 #include <U8g2lib.h>
 #include <SPI.h>
 #include <TimeLib.h>
-#include <DS1307RTC.h> 
+#include <DS1307RTC.h>
 #include <stdio.h>
 #include <string.h>
 #include <Wire.h>
 #include "PrayerTimes.h"
+#include <ctype.h>
 
 // Initilising tha Display //
 U8G2_ST7920_128X64_F_8080 u8g2(U8G2_R0, 22, 3, 4, 5, 6, 7, 8, 9, 13, U8X8_PIN_NONE, 12, 11);
@@ -34,16 +35,39 @@ static long virtualPosition = 1; // without STATIC it does not count correctly!!
 static long lastVirtualPosition = 1;
 const int buttonPin = 28; // the number of the pushbutton pin
 const int ledPin = 13;    // the number of the LED pin
-int buttonState = 0; // variable for reading the pushbutton status
+int buttonState = 0;      // variable for reading the pushbutton status
 int currentSelection = 0;
-double times[sizeof(TimeName)/sizeof(char*)];
+double times[sizeof(TimeName) / sizeof(char *)];
 
 
 // Function Declarations //
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
-void p(char *fmt, ... );
-void getNextPTime(double &pTime, char* pTimeName);
+void p(char *fmt, ...);
+char *getNextPTimeName(double &pTime, char *pTimeName);
+int getNextPTime(double &pTime, char *pTimeName);
 
+char *pTimeName1 = getNextPTimeName(times[NULL], TimeName[NULL]);
+
+// Generic catch-all implementation.
+template <typename T_ty>
+struct TypeInfo
+{
+  static const char *name;
+};
+template <typename T_ty>
+const char *TypeInfo<T_ty>::name = "unknown";
+
+// Handy macro to make querying stuff easier.
+#define TYPE_NAME(var) TypeInfo<typeof(var)>::name
+
+// Handy macro to make defining stuff easier.
+#define MAKE_TYPE_INFO(type) template <> \
+                             const char *TypeInfo<type>::name = #type;
+
+// Type-specific implementations.
+MAKE_TYPE_INFO(int)
+MAKE_TYPE_INFO(float)
+MAKE_TYPE_INFO(short)
 
 // what? you never seen an interrupt routine before? //
 void isr0()
@@ -62,24 +86,21 @@ void setup(void)
   attachInterrupt(0, isr0, CHANGE); // interrupt 0 is always connected to pin 2 on Arduino UNO
   Serial.begin(9600);
 
-while (!Serial) ; // wait until Arduino Serial Monitor opens
-  setSyncProvider(RTC.get);   // the function to get the time from the RTC
-  if(timeStatus()!= timeSet) 
-     Serial.println("Unable to sync with the RTC");
+  while (!Serial)
+    ;                       // wait until Arduino Serial Monitor opens
+  setSyncProvider(RTC.get); // the function to get the time from the RTC
+  if (timeStatus() != timeSet)
+    Serial.println("Unable to sync with the RTC");
   else
-     Serial.println("RTC has set the system time");     
+    Serial.println("RTC has set the system time");
 
   Serial.println("Start");
 
-int dst=1;
-  
   set_calc_method(ISNA);
   set_asr_method(Shafii);
   set_high_lats_adjust_method(OneSeventh);
 
-get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
-getNextPTime(times[NULL], TimeName[NULL]);
-
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
 
   u8g2.begin();
   delay(1000);
@@ -119,7 +140,6 @@ getNextPTime(times[NULL], TimeName[NULL]);
 
 void loop(void)
 {
-  
 
   while (currentSelection == 0)
   {
@@ -195,7 +215,9 @@ void loop(void)
 
   int integerSecond;
   char charSecond[BufSize];
-  
+
+  int moveValtext;
+  int moveValprayer;
 
   switch (currentSelection)
   {
@@ -209,45 +231,75 @@ void loop(void)
     snprintf(charSecond, BufSize, "%02d", integerSecond);
 
     char timeStr[15];
-    strcpy (timeStr,charHour);
-    strcat (timeStr,":");
-    strcat (timeStr,charMinute);
-    strcat (timeStr,":");
-    strcat (timeStr,charSecond);
-    puts (timeStr);
+    strcpy(timeStr, charHour);
+    strcat(timeStr, ":");
+    strcat(timeStr, charMinute);
+    strcat(timeStr, ":");
+    strcat(timeStr, charSecond);
+    puts(timeStr);
+    
+    //int pTime = getNextPTime(times[NULL], TimeName[NULL]);
+
+    String upperPTimeName = String(pTimeName1);
+    upperPTimeName.toUpperCase();
+
+    char charPtime[25];
+
+    upperPTimeName.toCharArray(charPtime, 25);
+    
+
+    char nextTimePrayerText[50];
+    strcpy(nextTimePrayerText, charPtime);
+    strcat(nextTimePrayerText, " PRAYER IS AT ");
+    puts(nextTimePrayerText);
 
     u8g2.clearBuffer();
 
-    // i basically just invented time //
+    // time thingy //
     u8g2.setFont(u8g2_font_crox5hb_tn);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2))-2), 35, timeStr);
+    u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2)) - 2), 35, timeStr);
 
     // 'the time is' pretext //
     u8g2.setFont(u8g2_font_blipfest_07_tr);
     u8g2.drawStr(((64 - (u8g2.getStrWidth("HABEEB'S ATHAAN CLOCK") / 2))), 15, "HABEEB'S ATHAAN CLOCK");
 
     u8g2.setFont(u8g2_font_blipfest_07_tn);
-    int moveValtext = ((u8g2.getStrWidth(" 04:20")) / 2);
-
-
-    u8g2.setFont(u8g2_font_baby_tf);
-    
-    u8g2.drawStr(((64 - (u8g2.getStrWidth("FAJR PRAYER IS AT ") / 2)) - moveValtext), 54, "FAJR PRAYER IS AT ");
+    moveValtext = ((u8g2.getStrWidth("04:20")) / 2);
 
     u8g2.setFont(u8g2_font_baby_tf);
-    int moveValprayer = (64 - (u8g2.getStrWidth("FAJR PRAYER IS AT ") / 2) + (u8g2.getStrWidth("FAJR PRAYER IS AT ")));
+    u8g2.drawStr(((64 - (u8g2.getStrWidth(nextTimePrayerText) / 2)) - moveValtext), 54, nextTimePrayerText);
+    //u8g2.drawStr(((64 - (u8g2.getStrWidth((upperPTime + " PRAYER IS AT ")) / 2)) - moveValtext), 54, (upperPTime + " PRAYER IS AT "));
+
+    u8g2.setFont(u8g2_font_baby_tf);
+    moveValprayer = (64 - (u8g2.getStrWidth(nextTimePrayerText) / 2) + (u8g2.getStrWidth(nextTimePrayerText)));
+
     u8g2.setFont(u8g2_font_blipfest_07_tn);
-    u8g2.drawStr(moveValprayer - moveValtext, 53, " 04:20");
-    
+    u8g2.drawStr((moveValprayer - moveValtext), 53, "04:20");
+
     u8g2.sendBuffer();
   }
   break;
   case 2:
   {
+
+    
+    //int pTime = getNextPTime(times[NULL], TimeName[NULL]);
+    //Serial.println("OG: ");
+    //Serial.print(pTimeName1);
+    //pTimeName1[10] = '\0';
+    
+    String upperPTimeName2 = String(pTimeName1);
+    //Serial.println("String: ");
+    //Serial.print(upperPTimeName);
+
+    char charPtime3[25];
+    upperPTimeName2.toCharArray(charPtime3, 25);
+    //Serial.println("Char: ");
+    //Serial.print(charPtime);
+
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB10_tf);
-
-    u8g2.drawStr(30, 40, "wagwan");
+    u8g2.drawStr(30, 40, charPtime3);
     u8g2.sendBuffer();
   }
   break;
@@ -256,7 +308,7 @@ void loop(void)
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_ncenB10_tf);
 
-    u8g2.drawStr(30, 40, "caca fess");
+    u8g2.drawStr(30, 40, TimeName[1]);
     u8g2.sendBuffer();
   }
   break;
@@ -274,7 +326,6 @@ void loop(void)
     virtualPosition = 1;
   }
 }
-
 
 int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 {
@@ -347,40 +398,67 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
   return userOption;
 }
 
-void p(char *fmt, ... ){
-        char tmp[128]; // resulting string limited to 128 chars
-        va_list args;
-        va_start (args, fmt );
-        vsnprintf(tmp, 128, fmt, args);
-        va_end (args);
-        Serial.print(tmp);
+void p(char *fmt, ...)
+{
+  char tmp[128]; // resulting string limited to 128 chars
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(tmp, 128, fmt, args);
+  va_end(args);
+  //Serial.print(tmp);
 }
 
-void getNextPTime(double &pTime, char* pTimeName)
+char *getNextPTimeName(double &pTime, char *pTimeName)
 {
-  double times[sizeof(TimeName)/sizeof(char*)];
-  double currTime=hour()+minute()/60.0;
+  double times[sizeof(TimeName) / sizeof(char *)];
+  double currTime = hour() + minute() / 60.0;
   int i;
-  
+
   set_calc_method(ISNA);
   set_asr_method(Shafii);
   set_high_lats_adjust_method(OneSeventh);
 
+  //get_prayer_times(year(), month(), day(), 46.9500, 7.4458, 1, times);
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
+  for (i = 0; i < sizeof(times) / sizeof(double); i++)
+  {
+    if (times[i] >= currTime)
+      break;
+  }
+  if ((times[i] - currTime) < 0)
+  {
+    i = 0;
+  }
+  pTime = times[i];
+  sprintf(pTimeName, "%s", TimeName[i]);
+  Serial.println(pTimeName);
+  //Serial.println( TYPE_NAME(pTimeName) );
+  return pTimeName;
+}
+
+int getNextPTime(double &pTime, char *pTimeName)
+{
+  double times[sizeof(TimeName) / sizeof(char *)];
+  double currTime = hour() + minute() / 60.0;
+  int i;
+
+  set_calc_method(ISNA);
+  set_asr_method(Shafii);
+  set_high_lats_adjust_method(OneSeventh);
 
   //get_prayer_times(year(), month(), day(), 46.9500, 7.4458, 1, times);
   get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
-  for (i=0;i<sizeof(times)/sizeof(double);i++){
-    if (times[i] >= currTime) break;
+  for (i = 0; i < sizeof(times) / sizeof(double); i++)
+  {
+    if (times[i] >= currTime)
+      break;
   }
-  if ( (times[i]-currTime) <0 ) {    
-    i=0;
+  if ((times[i] - currTime) < 0)
+  {
+    i = 0;
   }
-  pTime=times[i];
-  sprintf(pTimeName,"%s",TimeName[i]);
-  Serial.println(pTimeName);
-  Serial.println(pTime);
+  pTime = times[i];
+  sprintf(pTimeName, "%s", TimeName[i]);
+  //Serial.println(pTimeName);
+  return pTime;
 }
-
-
-
-
