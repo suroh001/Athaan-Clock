@@ -30,7 +30,7 @@ volatile boolean TurnDetected;
 volatile boolean up;
 const int pinA = 2;              // Used for generating interrupts using CLK signal
 const int pinB = 24;             // Used for reading DT signal
-const int PinSW = 26;            // Used for the push button switch
+const int PinSW = 18;            // Used for the push button switch
 static long virtualPosition = 1; // without STATIC it does not count correctly!!!
 static long lastVirtualPosition = 1;
 const int buttonPin = 28; // the number of the pushbutton pin
@@ -38,6 +38,8 @@ const int ledPin = 13;    // the number of the LED pin
 int buttonState = 0;      // variable for reading the pushbutton status
 int currentSelection = 0;
 double times[sizeof(TimeName) / sizeof(char *)];
+boolean nextmenu = false;
+volatile boolean clickDetect;
 
 // Function Declarations //
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
@@ -45,7 +47,7 @@ void p(char *fmt, ...);
 char *getNextPTimeName(double &pTime, char *pTimeName);
 double &getNextPTime(double &pTime, char *pTimeName);
 
-// Variable Function Declarations //
+// Variable Function Declarations? a lickle invention of mine. //
 char *pTimeName1 = getNextPTimeName(times[NULL], TimeName[NULL]);
 double &pTime1 = getNextPTime(times[NULL], TimeName[NULL]);
 
@@ -58,7 +60,7 @@ void isr0()
 
 void setup(void)
 {
-
+  nextmenu = false;
   pinMode(buttonPin, INPUT);
   pinMode(pinA, INPUT);
   pinMode(pinB, INPUT);
@@ -121,6 +123,8 @@ void setup(void)
 void loop(void)
 {
   pTimeName1 = getNextPTimeName(times[NULL], TimeName[NULL]);
+
+
 
   while (currentSelection == 0)
   {
@@ -218,7 +222,7 @@ void loop(void)
   upperPTimeName.toUpperCase();
   char charPtime[26];
   upperPTimeName.toCharArray(charPtime, 25);
-  Serial.println(charPtime);
+  //Serial.println(charPtime);
   char nextTimePrayerText[50];
   strcpy(nextTimePrayerText, charPtime);
   strcat(nextTimePrayerText, " PRAYER IS AT ");
@@ -236,38 +240,97 @@ void loop(void)
   strcat(pTimeHourMin, ":");
   strcat(pTimeHourMin, charPtimeM);
   puts(pTimeHourMin);
+  /*
+  // SWITCH ROUTINE //
+  if (digitalRead(PinSW) == 0)
+  {
 
+    delay(10);
+    if (digitalRead(PinSW) == 0)
+    {
+      nextmenu = !nextmenu;
+      Serial.println("Next Detent");
+      Serial.println(nextmenu);
+      while (digitalRead(PinSW) == 0)
+        ;
+    }
+  }
+*/
   switch (currentSelection)
   {
   case 1:
   {
+    
+    if (nextmenu == false)
+    {
+      delayMicroseconds(500)
+      if (!(digitalRead(PinSW)))
+      {
 
-    u8g2.clearBuffer();
+        nextmenu = !nextmenu;
+      }
 
-    // anime time thingy //
-    u8g2.setFont(u8g2_font_crox5hb_tn);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2)) - 2), 35, timeStr);
+      u8g2.clearBuffer();
 
-    // 'the time is' pretext //
-    u8g2.setFont(u8g2_font_blipfest_07_tr);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth("HABEEB'S ATHAAN CLOCK") / 2))), 15, "HABEEB'S ATHAAN CLOCK");
+      // anime time thingy //
+      u8g2.setFont(u8g2_font_crox5hb_tn);
+      u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2)) - 2), 35, timeStr);
 
-    // time of tha prayer formatting //
-    u8g2.setFont(u8g2_font_blipfest_07_tn);
-    moveValtext = ((u8g2.getStrWidth(pTimeHourMin)) / 2);
+      // 'the time is' pretext //
+      u8g2.setFont(u8g2_font_blipfest_07_tr);
+      u8g2.drawStr(((64 - (u8g2.getStrWidth("HABEEB'S ATHAAN CLOCK") / 2))), 15, "HABEEB'S ATHAAN CLOCK");
 
-    // name of tha prayer //
-    u8g2.setFont(u8g2_font_baby_tf);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth(nextTimePrayerText) / 2)) - moveValtext), 54, nextTimePrayerText);
-    //u8g2.drawStr(((64 - (u8g2.getStrWidth((upperPTime + " PRAYER IS AT ")) / 2)) - moveValtext), 54, (upperPTime + " PRAYER IS AT "));
+      // time of tha prayer formatting //
+      u8g2.setFont(u8g2_font_blipfest_07_tn);
+      moveValtext = ((u8g2.getStrWidth(pTimeHourMin)) / 2);
 
-    // time of tha prayer //
-    u8g2.setFont(u8g2_font_baby_tf);
-    moveValprayer = (64 - (u8g2.getStrWidth(nextTimePrayerText) / 2) + (u8g2.getStrWidth(nextTimePrayerText)));
-    u8g2.setFont(u8g2_font_blipfest_07_tn);
-    u8g2.drawStr((moveValprayer - moveValtext), 53, pTimeHourMin);
+      // name of tha prayer //
+      u8g2.setFont(u8g2_font_baby_tf);
+      u8g2.drawStr(((64 - (u8g2.getStrWidth(nextTimePrayerText) / 2)) - moveValtext), 54, nextTimePrayerText);
+      //u8g2.drawStr(((64 - (u8g2.getStrWidth((upperPTime + " PRAYER IS AT ")) / 2)) - moveValtext), 54, (upperPTime + " PRAYER IS AT "));
 
+      // time of tha prayer //
+      u8g2.setFont(u8g2_font_baby_tf);
+      moveValprayer = (64 - (u8g2.getStrWidth(nextTimePrayerText) / 2) + (u8g2.getStrWidth(nextTimePrayerText)));
+      u8g2.setFont(u8g2_font_blipfest_07_tn);
+      u8g2.drawStr((moveValprayer - moveValtext), 53, pTimeHourMin);
+
+      u8g2.sendBuffer();
+    }
+
+    if (nextmenu == true)
+    {
+
+      u8g2.clearBuffer();
+
+
+       for (int i = 64; i <= ((u8g2.getStrWidth("display ting") / 2) + 64); i++)
+  {
+    u8g2.drawHLine(i, 40, 1);
+    u8g2.drawHLine((128 - i), 20, 1);
+    u8g2.drawHLine((128 - i), 40, 1);
     u8g2.sendBuffer();
+    delay(1);
+  }
+
+  for (int i = 64; i <= ((u8g2.getStrWidth("display ting") / 2) + 64); i++)
+  {
+    u8g2.drawHLine(i, 40, 1);
+    u8g2.drawHLine((128 - i), 20, 1);
+    u8g2.drawHLine((128 - i), 40, 1);
+    u8g2.sendBuffer();
+    delay(1);
+  }
+
+
+      u8g2.setFont(u8g2_font_ncenB10_tf);
+      u8g2.drawStr(((64 - (u8g2.getStrWidth("display ting") / 2))), 27, "display ting");
+      u8g2.sendBuffer();
+      if (!(digitalRead(PinSW)))
+      {
+        nextmenu = !nextmenu;
+      }
+    }
   }
   break;
   case 2:
