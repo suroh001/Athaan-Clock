@@ -44,9 +44,8 @@ volatile int clickLast;
 volatile int viewAltMenu = 0;
 volatile int displayCount = 0;
 
-    // Function Declarations //
-    int
-    mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
+// Function Declarations //
+int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
 void p(char *fmt, ...);
 char *getNextPTimeName(double &pTime, char *pTimeName);
 double &getNextPTime(double &pTime, char *pTimeName);
@@ -297,8 +296,13 @@ void loop(void)
       delay(1);
     }
 */
-    u8g2.setFont(u8g2_font_ncenB10_tf);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth("display ting") / 2))), 27, "display ting");
+    
+    u8g2.setFont(u8g2_font_profont10_tf);
+    u8g2.drawStr(20, 15, "FAJR GANG");
+    u8g2.drawStr(20, 25, "DHUHR GANG");
+    u8g2.drawStr(20, 35, "ASR GANG");
+    u8g2.drawStr(20, 45, "MAGHRIB GANG");
+    u8g2.drawStr(20, 55, "ISHA GANG");
 
     u8g2.sendBuffer();
   }
@@ -306,19 +310,20 @@ void loop(void)
   case 1:
   {
 
+    // LOADING ANIME //
     if (displayCount == 0)
-      {
-        u8g2.clearBuffer();
-        u8g2.setFont(u8g2_font_blipfest_07_tr);
-        u8g2.drawStr(((64 - (u8g2.getStrWidth("INTIALISING") / 2))), 34, "INTIALISING");
+    {
+      u8g2.clearBuffer();
+      u8g2.setFont(u8g2_font_blipfest_07_tr);
+      u8g2.drawStr(((64 - (u8g2.getStrWidth("INTIALISING") / 2))), 34, "INTIALISING");
 
-        for (int i = ((64 - (u8g2.getStrWidth("INTIALISING") / 2))); i <= ((64 + (u8g2.getStrWidth("INTIALISING") / 2))); i++)
-        {
-          u8g2.drawHLine(i, 38, 1);
-          u8g2.sendBuffer();
-          delay(1);
-        }
+      for (int i = ((64 - (u8g2.getStrWidth("INTIALISING") / 2))); i <= ((64 + (u8g2.getStrWidth("INTIALISING") / 2))); i++)
+      {
+        u8g2.drawHLine(i, 38, 1);
+        u8g2.sendBuffer();
+        delay(1);
       }
+    }
 
     u8g2.clearBuffer();
 
@@ -326,9 +331,9 @@ void loop(void)
     u8g2.setFont(u8g2_font_crox5hb_tn);
     u8g2.drawStr(((64 - (u8g2.getStrWidth(timeStr) / 2)) - 2), 35, timeStr);
 
-    // 'the time is' pretext //
-    u8g2.setFont(u8g2_font_blipfest_07_tr);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth("HABEEB'S ATHAAN CLOCK") / 2))), 15, "HABEEB'S ATHAAN CLOCK");
+    // 'CLICK TO VIEW MORE' subheading //
+    u8g2.setFont(u8g2_font_baby_tf);
+    u8g2.drawStr(((64 - (u8g2.getStrWidth("CLICK TO VIEW MORE") / 2))), 54, "CLICK TO VIEW MORE");
 
     // time of tha prayer formatting //
     u8g2.setFont(u8g2_font_blipfest_07_tn);
@@ -336,14 +341,14 @@ void loop(void)
 
     // name of tha prayer //
     u8g2.setFont(u8g2_font_baby_tf);
-    u8g2.drawStr(((64 - (u8g2.getStrWidth(nextTimePrayerText) / 2)) - moveValtext), 54, nextTimePrayerText);
+    u8g2.drawStr(((64 - (u8g2.getStrWidth(nextTimePrayerText) / 2)) - moveValtext), 16, nextTimePrayerText);
     //u8g2.drawStr(((64 - (u8g2.getStrWidth((upperPTime + " PRAYER IS AT ")) / 2)) - moveValtext), 54, (upperPTime + " PRAYER IS AT "));
 
     // time of tha prayer //
     u8g2.setFont(u8g2_font_baby_tf);
     moveValprayer = (64 - (u8g2.getStrWidth(nextTimePrayerText) / 2) + (u8g2.getStrWidth(nextTimePrayerText)));
     u8g2.setFont(u8g2_font_blipfest_07_tn);
-    u8g2.drawStr((moveValprayer - moveValtext), 53, pTimeHourMin);
+    u8g2.drawStr((moveValprayer - moveValtext), 15, pTimeHourMin);
 
     u8g2.sendBuffer();
     displayCount++;
