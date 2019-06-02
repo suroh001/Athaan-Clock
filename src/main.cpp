@@ -88,7 +88,8 @@ void setup(void)
   set_asr_method(Shafii);
   set_high_lats_adjust_method(OneSeventh);
 
-  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
+  
 
   u8g2.begin();
   delay(1000);
@@ -134,7 +135,7 @@ void loop(void)
   {
 
     clickDetect = digitalRead(PinSW);
-    Serial.println(clickDetect);
+    //Serial.println(clickDetect);
 
     if ((clickDetect && !clickLast) && (virtualPosition != 0))
     {
@@ -296,9 +297,25 @@ void loop(void)
       delay(1);
     }
 */
+
+//Serial.println(times[0]);
+/*
+  int currTimeHour = (int)times[0];
+  int currTimeMinute = (times[0] - currTimeHour) * 60;
+  char charCtimeH[BufSize];
+  char charCtimeM[BufSize];
+  snprintf(charCtimeH, BufSize, "%02d", currTimeHour);
+  snprintf(charCtimeM, BufSize, "%02d", currTimeMinute);
+  char cTimeHourMin[20];
+  strcpy(cTimeHourMin, charCtimeH);
+  strcat(cTimeHourMin, ":");
+  strcat(cTimeHourMin, charCtimeM);
+  puts(cTimeHourMin);
+  */
     
     u8g2.setFont(u8g2_font_profont10_tf);
     u8g2.drawStr(20, 15, "FAJR GANG");
+    //u8g2.drawStr(90, 15, cTimeHourMin);
     u8g2.drawStr(20, 25, "DHUHR GANG");
     u8g2.drawStr(20, 35, "ASR GANG");
     u8g2.drawStr(20, 45, "MAGHRIB GANG");
@@ -493,7 +510,7 @@ char *getNextPTimeName(double &pTime, char *pTimeName)
   set_high_lats_adjust_method(OneSeventh);
 
   //get_prayer_times(year(), month(), day(), 46.9500, 7.4458, 1, times);
-  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
   for (i = 0; i < sizeof(times) / sizeof(double); i++)
   {
     if (times[i] >= currTime)
@@ -507,6 +524,7 @@ char *getNextPTimeName(double &pTime, char *pTimeName)
   sprintf(pTimeName, "%s", TimeName[i]);
   //Serial.println(pTimeName);
   //Serial.println( TYPE_NAME(pTimeName) );
+
   return pTimeName;
 }
 
@@ -521,7 +539,7 @@ double &getNextPTime(double &pTime, char *pTimeName)
   set_high_lats_adjust_method(OneSeventh);
 
   //get_prayer_times(year(), month(), day(), 46.9500, 7.4458, 1, times);
-  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
   for (i = 0; i < sizeof(times) / sizeof(double); i++)
   {
     if (times[i] >= currTime)
