@@ -43,10 +43,12 @@ volatile int clickDetect;
 volatile int clickLast;
 volatile int viewAltMenu = 0;
 volatile int displayCount = 0;
+volatile int displayCount2 = 0;
 
 // Function Declarations //
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
 void p(char *fmt, ...);
+void softReset();
 char *getNextPTimeName(double &pTime, char *pTimeName);
 double &getNextPTime(double &pTime, char *pTimeName);
 
@@ -63,6 +65,7 @@ void isr0()
 
 void setup(void)
 {
+
   //nextmenu = false;
   viewAltMenu = 0;
   clickLast = 1;
@@ -91,6 +94,7 @@ void setup(void)
   get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
 
   u8g2.begin();
+  /*
   delay(1000);
 
   u8g2.clearBuffer();
@@ -124,6 +128,7 @@ void setup(void)
     u8g2.sendBuffer();
     delay(1);
   }
+  */
 }
 
 void loop(void)
@@ -230,10 +235,10 @@ void loop(void)
   // NAME OF NEXT PRAYER //
   String upperPTimeName = String(pTimeName1);
   upperPTimeName.toUpperCase();
-  char charPtime[26];
-  upperPTimeName.toCharArray(charPtime, 25);
+  char charPtime[10];
+  upperPTimeName.toCharArray(charPtime, 20);
   //Serial.println(charPtime);
-  char nextTimePrayerText[50];
+  char nextTimePrayerText[20];
   strcpy(nextTimePrayerText, charPtime);
   strcat(nextTimePrayerText, " PRAYER IS AT ");
   puts(nextTimePrayerText);
@@ -243,6 +248,7 @@ void loop(void)
   int pTimeMinute = (pTime1 - pTimeHour) * 60;
   char charPtimeH[BufSize];
   char charPtimeM[BufSize];
+
   snprintf(charPtimeH, BufSize, "%02d", pTimeHour);
   snprintf(charPtimeM, BufSize, "%02d", pTimeMinute);
   char pTimeHourMin[20];
@@ -250,6 +256,72 @@ void loop(void)
   strcat(pTimeHourMin, ":");
   strcat(pTimeHourMin, charPtimeM);
   puts(pTimeHourMin);
+
+  // FAJR //
+  int fajrTimeHour = (int)times[0];
+  int fajrTimeMinute = (times[0] - fajrTimeHour) * 60;
+  char fajrtimeH[BufSize];
+  char fajrtimeM[BufSize];
+  snprintf(fajrtimeH, BufSize, "%02d", fajrTimeHour);
+  snprintf(fajrtimeM, BufSize, "%02d", fajrTimeMinute);
+  char fajrTimeHourMin[12];
+  strcpy(fajrTimeHourMin, fajrtimeH);
+  strcat(fajrTimeHourMin, ":");
+  strcat(fajrTimeHourMin, fajrtimeM);
+  puts(fajrTimeHourMin);
+
+  // DHUHR //
+  int dhuhrTimeHour = (int)times[2];
+  int dhuhrTimeMinute = (times[2] - dhuhrTimeHour) * 60;
+  char dhuhrtimeH[BufSize];
+  char dhuhrtimeM[BufSize];
+  snprintf(dhuhrtimeH, BufSize, "%02d", dhuhrTimeHour);
+  snprintf(dhuhrtimeM, BufSize, "%02d", dhuhrTimeMinute);
+  char dhuhrTimeHourMin[12];
+  strcpy(dhuhrTimeHourMin, dhuhrtimeH);
+  strcat(dhuhrTimeHourMin, ":");
+  strcat(dhuhrTimeHourMin, dhuhrtimeM);
+  puts(dhuhrTimeHourMin);
+
+  // ASR //
+  int asrTimeHour = (int)times[3];
+  int asrTimeMinute = (times[3] - asrTimeHour) * 60;
+  char asrtimeH[BufSize];
+  char asrtimeM[BufSize];
+  snprintf(asrtimeH, BufSize, "%02d", asrTimeHour);
+  snprintf(asrtimeM, BufSize, "%02d", asrTimeMinute);
+  char asrTimeHourMin[12];
+  strcpy(asrTimeHourMin, asrtimeH);
+  strcat(asrTimeHourMin, ":");
+  strcat(asrTimeHourMin, asrtimeM);
+  puts(asrTimeHourMin);
+
+  // MAGHRIB //
+  int maghribTimeHour = (int)times[4];
+  int maghribTimeMinute = (times[4] - maghribTimeHour) * 60;
+  char maghribtimeH[BufSize];
+  char maghribtimeM[BufSize];
+  snprintf(maghribtimeH, BufSize, "%02d", maghribTimeHour);
+  snprintf(maghribtimeM, BufSize, "%02d", maghribTimeMinute);
+  char maghribTimeHourMin[12];
+  strcpy(maghribTimeHourMin, maghribtimeH);
+  strcat(maghribTimeHourMin, ":");
+  strcat(maghribTimeHourMin, maghribtimeM);
+  puts(maghribTimeHourMin);
+
+  // ISHA //
+  int ishaTimeHour = (int)times[6];
+  int ishaTimeMinute = (times[6] - ishaTimeHour) * 60;
+  char ishatimeH[BufSize];
+  char ishatimeM[BufSize];
+  snprintf(ishatimeH, BufSize, "%02d", ishaTimeHour);
+  snprintf(ishatimeM, BufSize, "%02d", ishaTimeMinute);
+  char ishaTimeHourMin[12];
+  strcpy(ishaTimeHourMin, ishatimeH);
+  strcat(ishaTimeHourMin, ":");
+  strcat(ishaTimeHourMin, ishatimeM);
+  puts(ishaTimeHourMin);
+
   /*
   // SWITCH ROUTINE //
   if (digitalRead(PinSW) == 0)
@@ -266,6 +338,7 @@ void loop(void)
     }
   }
 */
+  //softReset();
 
   if (viewAltMenu == 1)
   {
@@ -274,59 +347,61 @@ void loop(void)
 
   //Serial.println(times[0]);
 
-
-
   //Serial.println(times[0]);
-int fajrTime = times[0];
-
-Serial.println(fajrTime);
-
-  int currTimeHour = (int)times[0];
-  int currTimeMinute = (times[0] - currTimeHour) * 60;
-  char charCtimeH[BufSize];
-  char charCtimeM[BufSize];
-  snprintf(charCtimeH, BufSize, "%02d", currTimeHour);
-  snprintf(charCtimeM, BufSize, "%02d", currTimeMinute);
-  char cTimeHourMin[20];
-  strcpy(cTimeHourMin, charCtimeH);
-  strcat(cTimeHourMin, ":");
-  strcat(cTimeHourMin, charCtimeM);
-  puts(cTimeHourMin);
 
   switch (currentSelection)
   {
   case 4:
   {
     u8g2.clearBuffer();
-    /*
-    for (int i = 64; i <= ((u8g2.getStrWidth("display ting") / 2) + 64); i++)
-    {
-      u8g2.drawHLine(i, 40, 1);
-      u8g2.drawHLine((128 - i), 20, 1);
-      u8g2.drawHLine((128 - i), 40, 1);
-      u8g2.sendBuffer();
-      delay(1);
-    }
-
-    for (int i = 64; i <= ((u8g2.getStrWidth("display ting") / 2) + 64); i++)
-    {
-      u8g2.drawHLine(i, 40, 1);
-      u8g2.drawHLine((128 - i), 20, 1);
-      u8g2.drawHLine((128 - i), 40, 1);
-      u8g2.sendBuffer();
-      delay(1);
-    }
-*/
 
     u8g2.setFont(u8g2_font_profont10_tf);
-    u8g2.drawStr(20, 15, "FAJR GANG");
-    u8g2.drawStr(90, 15, cTimeHourMin);
-    u8g2.drawStr(20, 25, "DHUHR GANG");
-    u8g2.drawStr(20, 35, "ASR GANG");
-    u8g2.drawStr(20, 45, "MAGHRIB GANG");
-    u8g2.drawStr(20, 55, "ISHA GANG");
+    u8g2.drawStr(17, 13, "FAJR GANG");
+    u8g2.drawStr(87, 13, fajrTimeHourMin);
+    u8g2.drawStr(17, 23, "DHUHR GANG");
+    u8g2.drawStr(87, 23, dhuhrTimeHourMin);
+    u8g2.drawStr(17, 33, "ASR GANG");
+    u8g2.drawStr(87, 33, asrTimeHourMin);
+    u8g2.drawStr(17, 43, "MAGHRIB GANG");
+    u8g2.drawStr(87, 43, maghribTimeHourMin);
+    u8g2.drawStr(17, 53, "ISHA GANG");
+    u8g2.drawStr(87, 53, ishaTimeHourMin);
 
+    if (displayCount2 == 0)
+    {
+      u8g2.setDrawColor(1);
+
+      for (int i = 64; i <= 114; i++)
+      {
+        u8g2.drawHLine(i, 4, 1);
+        u8g2.drawHLine(i, 59, 1);
+        u8g2.drawHLine((128 - i), 59, 1);
+        u8g2.drawHLine((128 - i), 4, 1);
+
+        u8g2.sendBuffer();
+        delay(1);
+      }
+      for (int i = 4; i <= 35; i++)
+      {
+        u8g2.drawVLine(13, i, 1);
+        u8g2.drawVLine(114, i, 1);
+        u8g2.drawVLine(13, (63 - i), 1);
+        u8g2.drawVLine(114, (63 - i), 1);
+
+        u8g2.sendBuffer();
+        delay(1);
+      }
+    }
+
+
+    u8g2.setDrawColor(1);
+    u8g2.drawHLine(13, 4, 101);
+    u8g2.drawHLine(13, 59, 101);
+    u8g2.drawVLine(13, 4, 56);
+    u8g2.drawVLine(114, 4, 56);
+    u8g2.setDrawColor(2);
     u8g2.sendBuffer();
+    displayCount2++;
   }
   break;
   case 1:
@@ -410,6 +485,7 @@ Serial.println(fajrTime);
   if (buttonState == HIGH)
   {
     displayCount = 0;
+    displayCount2 = 0;
     if (viewAltMenu == 1)
     {
       viewAltMenu = 0;
@@ -496,17 +572,17 @@ int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
 
 void p(char *fmt, ...)
 {
-  char tmp[128]; // resulting string limited to 128 chars
+  char tmp[64]; // resulting string limited to 128 chars
   va_list args;
   va_start(args, fmt);
-  vsnprintf(tmp, 128, fmt, args);
+  vsnprintf(tmp, 64, fmt, args);
   va_end(args);
   //Serial.print(tmp);
 }
 
 char *getNextPTimeName(double &pTime, char *pTimeName)
 {
-  double times[sizeof(TimeName) / sizeof(char *)];
+
   double currTime = hour() + minute() / 60.0;
   int i;
 
@@ -515,7 +591,7 @@ char *getNextPTimeName(double &pTime, char *pTimeName)
   set_high_lats_adjust_method(OneSeventh);
 
   //get_prayer_times(year(), month(), day(), 46.9500, 7.4458, 1, times);
-  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
   for (i = 0; i < sizeof(times) / sizeof(double); i++)
   {
     if (times[i] >= currTime)
@@ -534,7 +610,7 @@ char *getNextPTimeName(double &pTime, char *pTimeName)
 
 double &getNextPTime(double &pTime, char *pTimeName)
 {
-  double times[sizeof(TimeName) / sizeof(char *)];
+
   double currTime = hour() + minute() / 60.0;
   int i;
 
@@ -543,7 +619,7 @@ double &getNextPTime(double &pTime, char *pTimeName)
   set_high_lats_adjust_method(OneSeventh);
 
   //get_prayer_times(year(), month(), day(), 46.9500, 7.4458, 1, times);
-  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
   for (i = 0; i < sizeof(times) / sizeof(double); i++)
   {
     if (times[i] >= currTime)
@@ -557,4 +633,9 @@ double &getNextPTime(double &pTime, char *pTimeName)
   sprintf(pTimeName, "%s", TimeName[i]);
   //Serial.println(pTimeName);
   return pTime;
+}
+
+void softReset()
+{
+  asm volatile("  jmp 0");
 }
