@@ -240,7 +240,7 @@ void loop(void)
   //Serial.println(charPtime);
   char nextTimePrayerText[20];
   strcpy(nextTimePrayerText, charPtime);
-  strcat(nextTimePrayerText, " PRAYER IS AT ");
+  strcat(nextTimePrayerText, " IS AT ");
   puts(nextTimePrayerText);
 
   // TIME OF NEXT PRAYER //
@@ -258,8 +258,8 @@ void loop(void)
   puts(pTimeHourMin);
 
   // FAJR //
-  int fajrTimeHour = (int)times[0];
-  int fajrTimeMinute = (times[0] - fajrTimeHour) * 60;
+  int fajrTimeHour = (int)times[1];
+  int fajrTimeMinute = (times[1] - fajrTimeHour) * 60;
   char fajrtimeH[BufSize];
   char fajrtimeM[BufSize];
   snprintf(fajrtimeH, BufSize, "%02d", fajrTimeHour);
@@ -356,15 +356,15 @@ void loop(void)
     u8g2.clearBuffer();
 
     u8g2.setFont(u8g2_font_profont10_tf);
-    u8g2.drawStr(17, 13, "FAJR GANG");
+    u8g2.drawStr(17, 13, "FAJR: ");
     u8g2.drawStr(87, 13, fajrTimeHourMin);
-    u8g2.drawStr(17, 23, "DHUHR GANG");
+    u8g2.drawStr(17, 23, "DHUHR: ");
     u8g2.drawStr(87, 23, dhuhrTimeHourMin);
-    u8g2.drawStr(17, 33, "ASR GANG");
+    u8g2.drawStr(17, 33, "ASR: ");
     u8g2.drawStr(87, 33, asrTimeHourMin);
-    u8g2.drawStr(17, 43, "MAGHRIB GANG");
+    u8g2.drawStr(17, 43, "MAGHRIB: ");
     u8g2.drawStr(87, 43, maghribTimeHourMin);
-    u8g2.drawStr(17, 53, "ISHA GANG");
+    u8g2.drawStr(17, 53, "ISHA: ");
     u8g2.drawStr(87, 53, ishaTimeHourMin);
 
     if (displayCount2 == 0)
