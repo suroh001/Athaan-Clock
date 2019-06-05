@@ -1,6 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![made-for-VSCode](https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg)](https://code.visualstudio.com/)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/suroh001/Athaan-Clock/commits/master)
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://github.com/suroh001/AthaanClock/issues/new)
 
 # Habeeb's Athaan Clock
@@ -18,6 +18,9 @@ Configuring rotary encoder in sync with display:
 
 Created a user interface menu for user to interact with functions:
 <img src="https://raw.githubusercontent.com/suroh001/AthaanClock/master/Images/menuStructure.gif" width="720">
+
+Finishing touches on the start menu option with some sweet animations:
+<img src="https://raw.githubusercontent.com/suroh001/Athaan-Clock/master/Images/menuFinal.gif" width="720">
 
 [![ForTheBadge built-with-swag](http://ForTheBadge.com/images/badges/built-with-swag.svg)](https://GitHub.com/suroh001/)
 [![ForTheBadge powered-by-electricity](http://ForTheBadge.com/images/badges/powered-by-electricity.svg)](http://ForTheBadge.com)
