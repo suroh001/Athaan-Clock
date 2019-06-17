@@ -49,11 +49,11 @@ volatile int displayCount2 = 0;
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
 void p(char *fmt, ...);
 void softReset();
-char *getNextPTimeName(double &pTime, char *pTimeName);
+char *getNextPTimeName(/*double &pTime,*/ char *pTimeName);
 double &getNextPTime(double &pTime, char *pTimeName);
 
-// Variable Function Declarations? a lickle invention of mine. //
-char *pTimeName1 = getNextPTimeName(times[NULL], TimeName[NULL]);
+// Variable Function Declarations? a little invention of mine. //
+char *pTimeName1 = getNextPTimeName(/*double &pTime,*/ TimeName[NULL]);
 double &pTime1 = getNextPTime(times[NULL], TimeName[NULL]);
 
 // what? you never seen an interrupt routine before? //
@@ -133,7 +133,7 @@ void setup(void)
 
 void loop(void)
 {
-  pTimeName1 = getNextPTimeName(times[NULL], TimeName[NULL]);
+  pTimeName1 = getNextPTimeName(/*double &pTime,*/ TimeName[NULL]);
 
   while (currentSelection == 0)
   {
@@ -243,9 +243,27 @@ void loop(void)
   strcat(nextTimePrayerText, " IS AT ");
   puts(nextTimePrayerText);
 
+  
+  double currTime = hour() + minute() / 60.0;
+  int h;
+
+
+  for (h = 0; h < sizeof(times) / sizeof(double); h++)
+  {
+    if (times[h] >= currTime)
+      break;
+  }
+  if ((times[h] - currTime) < 0)
+  {
+    h = 0;
+    //pTime = times[i];
+  }
+
+
+
   // TIME OF NEXT PRAYER //
-  int pTimeHour = (int)pTime1;
-  int pTimeMinute = (pTime1 - pTimeHour) * 60;
+  int pTimeHour = (int)times[h];
+  int pTimeMinute = (times[h] - pTimeHour) * 60;
   char charPtimeH[BufSize];
   char charPtimeM[BufSize];
 
@@ -258,8 +276,8 @@ void loop(void)
   puts(pTimeHourMin);
 
   // FAJR //
-  int fajrTimeHour = (int)times[1];
-  int fajrTimeMinute = (times[1] - fajrTimeHour) * 60;
+  int fajrTimeHour = (int)times[0];
+  int fajrTimeMinute = (times[0] - fajrTimeHour) * 60;
   char fajrtimeH[BufSize];
   char fajrtimeM[BufSize];
   snprintf(fajrtimeH, BufSize, "%02d", fajrTimeHour);
@@ -580,7 +598,7 @@ void p(char *fmt, ...)
   //Serial.print(tmp);
 }
 
-char *getNextPTimeName(double &pTime, char *pTimeName)
+char *getNextPTimeName(/*double &pTime,*/ char *pTimeName)
 {
 
   double currTime = hour() + minute() / 60.0;
@@ -600,8 +618,9 @@ char *getNextPTimeName(double &pTime, char *pTimeName)
   if ((times[i] - currTime) < 0)
   {
     i = 0;
+    //pTime = times[i];
   }
-  pTime = times[i];
+  //pTime = times[i];
   sprintf(pTimeName, "%s", TimeName[i]);
   //Serial.println(pTimeName);
   //Serial.println( TYPE_NAME(pTimeName) );
@@ -628,6 +647,7 @@ double &getNextPTime(double &pTime, char *pTimeName)
   if ((times[i] - currTime) < 0)
   {
     i = 0;
+    //pTime = times[i];
   }
   pTime = times[i];
   sprintf(pTimeName, "%s", TimeName[i]);
