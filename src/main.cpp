@@ -36,6 +36,7 @@ static long lastVirtualPosition = 1;
 const int buttonPin = 28; // the number of the pushbutton pin
 const int ledPin = 13;    // the number of the LED pin
 int buttonState = 0;      // variable for reading the pushbutton status
+int buttonStateLast = 1;
 int currentSelection = 0;
 double times[sizeof(TimeName) / sizeof(char *)];
 //boolean nextmenu = false;
@@ -91,7 +92,7 @@ void setup(void)
   set_asr_method(Shafii);
   set_high_lats_adjust_method(OneSeventh);
 
-  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 0, times);
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
 
   u8g2.begin();
   /*
@@ -133,6 +134,11 @@ void setup(void)
 
 void loop(void)
 {
+  set_calc_method(ISNA);
+  set_asr_method(Shafii);
+  set_high_lats_adjust_method(OneSeventh);
+
+  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
   pTimeName1 = getNextPTimeName(/*double &pTime,*/ TimeName[NULL]);
 
   while (currentSelection == 0)
@@ -276,8 +282,8 @@ void loop(void)
   puts(pTimeHourMin);
 
   // FAJR //
-  int fajrTimeHour = (int)times[0];
-  int fajrTimeMinute = (times[0] - fajrTimeHour) * 60;
+  int fajrTimeHour = (int)times[1];
+  int fajrTimeMinute = (times[1] - fajrTimeHour) * 60;
   char fajrtimeH[BufSize];
   char fajrtimeM[BufSize];
   snprintf(fajrtimeH, BufSize, "%02d", fajrTimeHour);
@@ -387,6 +393,7 @@ void loop(void)
 
     if (displayCount2 == 0)
     {
+      /*
       u8g2.setDrawColor(1);
 
       for (int i = 64; i <= 114; i++)
@@ -409,6 +416,7 @@ void loop(void)
         u8g2.sendBuffer();
         delay(1);
       }
+      */
     }
 
 
@@ -428,6 +436,7 @@ void loop(void)
     // LOADING ANIME //
     if (displayCount == 0)
     {
+      /*
       u8g2.clearBuffer();
       u8g2.setFont(u8g2_font_blipfest_07_tr);
       u8g2.drawStr(((64 - (u8g2.getStrWidth("INTIALISING") / 2))), 34, "INTIALISING");
@@ -438,6 +447,7 @@ void loop(void)
         u8g2.sendBuffer();
         delay(1);
       }
+      */
     }
 
     u8g2.clearBuffer();
@@ -500,7 +510,7 @@ void loop(void)
   buttonState = digitalRead(buttonPin);
 
   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-  if (buttonState == HIGH)
+  if (buttonState && !buttonStateLast)
   {
     displayCount = 0;
     displayCount2 = 0;
@@ -515,6 +525,7 @@ void loop(void)
       virtualPosition = 1;
     }
   }
+  buttonStateLast = buttonState;
 }
 
 int mainMenuOption(int menuPos, int virtualPos, int lastVirtualPos)
