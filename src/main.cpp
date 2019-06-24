@@ -45,6 +45,9 @@ volatile int clickLast;
 volatile int viewAltMenu = 0;
 volatile int displayCount = 0;
 volatile int displayCount2 = 0;
+char calcMethod;
+char AsrMethod;
+char HighLatAdjust;
 
 // Function Declarations //
 int mainMenuOption(int menuPos, int virtualPos, int lastvirtualPos);
@@ -88,11 +91,11 @@ void setup(void)
 
   Serial.println("Start");
 
-  set_calc_method(ISNA);
-  set_asr_method(Shafii);
-  set_high_lats_adjust_method(OneSeventh);
+  //set_calc_method(ISNA);
+  //set_asr_method(Shafii);
+  //set_high_lats_adjust_method(OneSeventh);
 
-  get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
+  //get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
 
   u8g2.begin();
   /*
@@ -130,15 +133,20 @@ void setup(void)
     delay(1);
   }
   */
+
+  char calcMethod = "ISNA";
+  char AsrMethod = "Shafii";
+  char HighLatAdjust = "OneSeventh";
 }
 
 void loop(void)
 {
-  set_calc_method(ISNA);
-  set_asr_method(Shafii);
-  set_high_lats_adjust_method(OneSeventh);
+  set_calc_method(calcMethod);
+  set_asr_method(AsrMethod);
+  set_high_lats_adjust_method(HighLatAdjust);
 
   get_prayer_times(year(), month(), day(), 51.373176, -0.210757, 1, times);
+
   pTimeName1 = getNextPTimeName(/*double &pTime,*/ TimeName[NULL]);
 
   while (currentSelection == 0)
@@ -238,21 +246,9 @@ void loop(void)
   strcat(timeStr, charSecond);
   puts(timeStr);
 
-  // NAME OF NEXT PRAYER //
-  String upperPTimeName = String(pTimeName1);
-  upperPTimeName.toUpperCase();
-  char charPtime[10];
-  upperPTimeName.toCharArray(charPtime, 20);
-  //Serial.println(charPtime);
-  char nextTimePrayerText[20];
-  strcpy(nextTimePrayerText, charPtime);
-  strcat(nextTimePrayerText, " IS AT ");
-  puts(nextTimePrayerText);
-
-  
+  // Let's figure out when the next prayer is //
   double currTime = hour() + minute() / 60.0;
   int h;
-
 
   for (h = 0; h < sizeof(times) / sizeof(double); h++)
   {
@@ -265,7 +261,16 @@ void loop(void)
     //pTime = times[i];
   }
 
-
+  // NAME OF NEXT PRAYER //
+  String upperPTimeName = String(TimeName[h]);
+  upperPTimeName.toUpperCase();
+  char charPtime[10];
+  upperPTimeName.toCharArray(charPtime, 20);
+  //Serial.println(charPtime);
+  char nextTimePrayerText[20];
+  strcpy(nextTimePrayerText, charPtime);
+  strcat(nextTimePrayerText, " IS AT ");
+  puts(nextTimePrayerText);
 
   // TIME OF NEXT PRAYER //
   int pTimeHour = (int)times[h];
@@ -282,8 +287,8 @@ void loop(void)
   puts(pTimeHourMin);
 
   // FAJR //
-  int fajrTimeHour = (int)times[1];
-  int fajrTimeMinute = (times[1] - fajrTimeHour) * 60;
+  int fajrTimeHour = (int)times[0];
+  int fajrTimeMinute = (times[0] - fajrTimeHour) * 60;
   char fajrtimeH[BufSize];
   char fajrtimeM[BufSize];
   snprintf(fajrtimeH, BufSize, "%02d", fajrTimeHour);
@@ -418,7 +423,6 @@ void loop(void)
       }
       */
     }
-
 
     u8g2.setDrawColor(1);
     u8g2.drawHLine(13, 4, 101);
@@ -632,7 +636,7 @@ char *getNextPTimeName(/*double &pTime,*/ char *pTimeName)
     //pTime = times[i];
   }
   //pTime = times[i];
-  sprintf(pTimeName, "%s", TimeName[i]);
+  //sprintf(pTimeName, "%s", TimeName[i]);
   //Serial.println(pTimeName);
   //Serial.println( TYPE_NAME(pTimeName) );
   return pTimeName;
@@ -660,8 +664,8 @@ double &getNextPTime(double &pTime, char *pTimeName)
     i = 0;
     //pTime = times[i];
   }
-  pTime = times[i];
-  sprintf(pTimeName, "%s", TimeName[i]);
+  //pTime = times[i];
+  //sprintf(pTimeName, "%s", TimeName[i]);
   //Serial.println(pTimeName);
   return pTime;
 }
