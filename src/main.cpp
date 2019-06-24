@@ -261,6 +261,12 @@ void loop(void)
     //pTime = times[i];
   }
 
+  Serial.print(currTime);
+
+  if (currTime = times[0]){
+
+  }
+
   // NAME OF NEXT PRAYER //
   String upperPTimeName = String(TimeName[h]);
   upperPTimeName.toUpperCase();
