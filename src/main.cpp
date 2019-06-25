@@ -21,6 +21,12 @@
 #include <Wire.h>
 #include "PrayerTimes.h"
 #include <ctype.h>
+#include <SoftwareSerial.h>
+#include <DFPlayerMini_Fast.h>
+
+//Initialising tha Player //
+SoftwareSerial mySerial(50, 52); // RX, TX
+DFPlayerMini_Fast myMP3;
 
 // Initilising tha Display //
 U8G2_ST7920_128X64_F_8080 u8g2(U8G2_R0, 22, 3, 4, 5, 6, 7, 8, 9, 13, U8X8_PIN_NONE, 12, 11);
@@ -141,6 +147,7 @@ void setup(void)
 
 void loop(void)
 {
+  //myMP3.sleep();
   set_calc_method(calcMethod);
   set_asr_method(AsrMethod);
   set_high_lats_adjust_method(HighLatAdjust);
@@ -261,10 +268,62 @@ void loop(void)
     //pTime = times[i];
   }
 
-  Serial.print(currTime);
+  Serial.println(currTime);
+  Serial.println(times[3]);
 
-  if (currTime = times[0]){
+  //Play Fajr Athaan
+  if (currTime = times[0])
+  {
+    mySerial.begin(9600);
+    myMP3.begin(mySerial);
+    myMP3.wakeUp();
+    myMP3.volume(30);
+    delay(20);
+    myMP3.play(1);
+  }
 
+  //Play Dhuhr Athaan
+  if (currTime = times[2])
+  {
+    mySerial.begin(9600);
+    myMP3.begin(mySerial);
+    myMP3.wakeUp();
+    myMP3.volume(30);
+    delay(20);
+    myMP3.play(1);
+  }
+
+  //Play Asr Athaan
+  if (currTime = times[3])
+  {
+    mySerial.begin(9600);
+    myMP3.begin(mySerial);
+    myMP3.wakeUp();
+    myMP3.volume(30);
+    delay(20);
+    myMP3.play(1);
+  }
+
+  //Play Maghrib Athaan
+  if (currTime = times[4])
+  {
+    mySerial.begin(9600);
+    myMP3.begin(mySerial);
+    myMP3.wakeUp();
+    myMP3.volume(30);
+    delay(20);
+    myMP3.play(1);
+  }
+
+  //Play Isha Athaan
+  if (currTime = times[6])
+  {
+    mySerial.begin(9600);
+    myMP3.begin(mySerial);
+    myMP3.wakeUp();
+    myMP3.volume(30);
+    delay(20);
+    myMP3.play(1);
   }
 
   // NAME OF NEXT PRAYER //

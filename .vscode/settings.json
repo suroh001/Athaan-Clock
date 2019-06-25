@@ -1,8 +1,8 @@
 {
     "terminal.integrated.env.osx": {
-        "PATH": "/Users/habeeb/.platformio/penv/bin:/Users/habeeb/.platformio/penv:/anaconda3/bin:/anaconda3/condabin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Wireshark.app/Contents/MacOS:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin:/Users/habeeb:/opt/metasploit-framework/bin:/opt/metasploit-framework/bin:/opt/metasploit-framework/bin:/opt/metasploit-framework/bin",
+        "PATH": "/Users/habeeb/.platformio/penv/bin:/Users/habeeb/.platformio/penv:/anaconda3/bin:/anaconda3/condabin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Wireshark.app/Contents/MacOS:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin:/opt/metasploit-framework/bin:/opt/metasploit-framework/bin:/opt/metasploit-framework/bin:/opt/metasploit-framework/bin",
         "PLATFORMIO_CALLER": "vscode"
     },
     "C_Cpp.errorSquiggles": "Disabled",
-    "workbench.colorTheme": "Monokai Dimmed"
+    "workbench.colorTheme": "Material Theme Darker"
 }
