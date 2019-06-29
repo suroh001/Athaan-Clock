@@ -272,7 +272,7 @@ void loop(void)
   Serial.println(times[3]);
 
   //Play Fajr Athaan
-  if (currTime = times[0])
+  if (currTime == times[0])
   {
     mySerial.begin(9600);
     myMP3.begin(mySerial);
@@ -283,7 +283,7 @@ void loop(void)
   }
 
   //Play Dhuhr Athaan
-  if (currTime = times[2])
+  if (currTime == times[2])
   {
     mySerial.begin(9600);
     myMP3.begin(mySerial);
@@ -294,7 +294,7 @@ void loop(void)
   }
 
   //Play Asr Athaan
-  if (currTime = times[3])
+  if (currTime == times[3])
   {
     mySerial.begin(9600);
     myMP3.begin(mySerial);
@@ -305,7 +305,7 @@ void loop(void)
   }
 
   //Play Maghrib Athaan
-  if (currTime = times[4])
+  if (currTime == times[4])
   {
     mySerial.begin(9600);
     myMP3.begin(mySerial);
@@ -316,7 +316,7 @@ void loop(void)
   }
 
   //Play Isha Athaan
-  if (currTime = times[6])
+  if (currTime == times[6])
   {
     mySerial.begin(9600);
     myMP3.begin(mySerial);
