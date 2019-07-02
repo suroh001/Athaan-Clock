@@ -271,6 +271,8 @@ void loop(void)
   Serial.println(currTime);
   Serial.println(times[3]);
 
+
+
   //Play Fajr Athaan
   if (currTime == times[0])
   {
@@ -280,6 +282,10 @@ void loop(void)
     myMP3.volume(30);
     delay(20);
     myMP3.play(1);
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
+    u8g2.drawStr(30, 40, "wagwan");
+    u8g2.sendBuffer();
   }
 
   //Play Dhuhr Athaan
@@ -291,6 +297,10 @@ void loop(void)
     myMP3.volume(30);
     delay(20);
     myMP3.play(1);
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
+    u8g2.drawStr(30, 40, "wagwan");
+    u8g2.sendBuffer();
   }
 
   //Play Asr Athaan
@@ -302,6 +312,10 @@ void loop(void)
     myMP3.volume(30);
     delay(20);
     myMP3.play(1);
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
+    u8g2.drawStr(30, 40, "wagwan");
+    u8g2.sendBuffer();
   }
 
   //Play Maghrib Athaan
@@ -313,6 +327,10 @@ void loop(void)
     myMP3.volume(30);
     delay(20);
     myMP3.play(1);
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
+    u8g2.drawStr(30, 40, "wagwan");
+    u8g2.sendBuffer();
   }
 
   //Play Isha Athaan
@@ -324,6 +342,10 @@ void loop(void)
     myMP3.volume(30);
     delay(20);
     myMP3.play(1);
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_ncenB10_tf);
+    u8g2.drawStr(30, 40, "wagwan");
+    u8g2.sendBuffer();
   }
 
   // NAME OF NEXT PRAYER //
